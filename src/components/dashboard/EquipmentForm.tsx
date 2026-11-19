@@ -169,7 +169,7 @@ export function EquipmentForm({
 
         <div>
           <label htmlFor="rentalPrice" className={labelClass}>
-            Rental price (৳) <span className="text-rose-500">*</span>
+            Rental price ($) <span className="text-rose-500">*</span>
           </label>
           <input
             id="rentalPrice"

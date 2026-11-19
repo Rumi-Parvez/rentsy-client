@@ -13,10 +13,9 @@ export default function AppChrome({
   const pathname = usePathname();
 
   const isDashboard = pathname?.startsWith("/dashboard");
-  const isAuthPage =
-    pathname === "/sign-in" || pathname === "/sign-up";
+  
 
-  const hideChrome = isDashboard || isAuthPage;
+  const hideChrome = isDashboard
 
   return (
     <>

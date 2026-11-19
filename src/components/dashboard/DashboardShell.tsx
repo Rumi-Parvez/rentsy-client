@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { RiHome5Fill } from "react-icons/ri";
+
+import logoImg from "../../app/assets/rEntsy-Photoroom.png"
 
 import {
   ArrowUpRight,
@@ -36,6 +39,8 @@ import {
 import { roleLabel } from "@/lib/format";
 import type { DashboardUser } from "@/types/dashboard";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
+import { Imprima } from "next/font/google";
 
 const SIDEBAR_KEY = "rentsy-dashboard-sidebar-collapsed";
 
@@ -50,13 +55,32 @@ export default function DashboardShell({
   const pathname = usePathname();
   const { data: session } = useSession();
 
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    try {
+      return window.localStorage.getItem(SIDEBAR_KEY) === "true";
+    } catch {
+      return false;
+    }
+  });
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [mobileSearch, setMobileSearch] = useState(false);
   const [search, setSearch] = useState("");
   const [signingOut, setSigningOut] = useState(false);
+  const [previousPathname, setPreviousPathname] = useState(pathname);
+
+  if (pathname !== previousPathname) {
+    setPreviousPathname(pathname);
+    setMobileOpen(false);
+    setProfileOpen(false);
+    setNotificationsOpen(false);
+    setMobileSearch(false);
+  }
 
   const profileRef = useRef<HTMLDivElement>(null);
   const notificationRef = useRef<HTMLDivElement>(null);
@@ -108,25 +132,6 @@ export default function DashboardShell({
               href: "/dashboard/favorites",
             },
           ];
-
-  // Restore the sidebar preference.
-  useEffect(() => {
-    try {
-      setCollapsed(
-        window.localStorage.getItem(SIDEBAR_KEY) === "true"
-      );
-    } catch {
-      // ignore storage errors
-    }
-  }, []);
-
-  // Close overlays on navigation.
-  useEffect(() => {
-    setMobileOpen(false);
-    setProfileOpen(false);
-    setNotificationsOpen(false);
-    setMobileSearch(false);
-  }, [pathname]);
 
   // Lock body scroll while the mobile drawer is open.
   useEffect(() => {
@@ -370,6 +375,13 @@ export default function DashboardShell({
                   <Search className="h-4 w-4" />
                 </button>
 
+                <span>
+                  <Link href='/' >
+              <RiHome5Fill className="text-2xl text-purple-700 dark:text-white/80" />
+
+              </Link>
+                </span>
+
                 <ThemeToggle />
 
                 <div className="relative" ref={notificationRef}>
@@ -575,18 +587,21 @@ function SidebarContent({
           href="/dashboard"
           className="flex items-center gap-2.5 overflow-hidden"
         >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#6e13f9] to-[#a855f7] text-white shadow-sm">
-            <Boxes className="h-[18px] w-[18px]" />
-          </span>
+          <Image
+            src={logoImg}
+            alt="rEntsy"
+            width={125}
+            height={40}
+            priority
+            className="h-9 w-auto object-contain"
+          />
 
           {!collapsed && (
-            <span className="min-w-0">
-              <span className="block text-lg font-bold leading-none tracking-tight text-foreground">
-                rEntsy
+            <span className="min-w-0 flex items-center gap-3">
+              <span className="mt-1 text-black dark:text-white block text-[15px] font-bold uppercase tracking-[0.18em] ">
+                {user.role}
               </span>
-              <span className="mt-1 block text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                {user.role} workspace
-              </span>
+              
             </span>
           )}
         </Link>
@@ -636,7 +651,7 @@ function SidebarContent({
           {nav.map((section) => (
             <div key={section.title}>
               {!collapsed && (
-                <p className="mb-1.5 px-2.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/80">
+                <p className="mb-1.5 px-2.5 text-[15px] font-bold   text-muted-foreground/95">
                   {section.title}
                 </p>
               )}
@@ -695,12 +710,12 @@ function SidebarContent({
               Our rental support team is available to help you
               manage listings, bookings and payments.
             </p>
-            <a
-              href="mailto:support@rentsy.com"
+            <Link
+              href="contact"
               className="mt-2.5 inline-flex h-7 items-center justify-center rounded-md bg-white px-3 text-[10px] font-bold text-[#3b0c8f] transition hover:bg-purple-50"
             >
               Contact support
-            </a>
+            </Link>
           </div>
         )}
 

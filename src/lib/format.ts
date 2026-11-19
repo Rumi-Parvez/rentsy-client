@@ -6,10 +6,10 @@ export const currency = new Intl.NumberFormat("en-US", {
 
 export function formatCurrency(value?: number | null) {
   if (value === null || value === undefined || Number.isNaN(value)) {
-    return "৳0";
+    return "$0";
   }
 
-  return `৳${currency.format(value)}`;
+  return `$${currency.format(value)}`;
 }
 
 export function formatNumber(value?: number | null) {
