@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import Footer from "./components/Footer";
+
 
 
 const geistSans = Geist({
@@ -29,6 +31,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
       <ThemeProvider>
       {children}
+
+        <Footer></Footer>
       </ThemeProvider>
       
       <Toaster />
