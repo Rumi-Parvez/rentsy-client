@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import Footer from "./components/Footer";
+import Navbar from "./components/Navbar";
 
 
 
@@ -26,10 +27,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="flex min-h-screen flex-col bg-background text-foreground transition-colors duration-300">
       <ThemeProvider>
+        <Navbar></Navbar>
       {children}
 
         <Footer></Footer>
