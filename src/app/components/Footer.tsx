@@ -27,11 +27,11 @@ const marketplaceLinks = [
 ];
 
 const businessLinks = [
-  { label: "List Equipment", href: "/list-equipment" },
-  { label: "Owner Dashboard", href: "/dashboard/owner" },
-  { label: "Manage Bookings", href: "/dashboard/bookings" },
-  { label: "Payments", href: "/payments" },
-  { label: "Become an Owner", href: "/become-an-owner" },
+  { label: "List Equipment", href: "/dashboard/add-equipment" },
+  { label: "Owner Dashboard", href: "/dashboard/equipment" },
+  { label: "Manage Bookings", href: "/dashboard/rentals" },
+  { label: "My Profile", href: "/dashboard/profile" },
+  { label: "Become an Owner", href: "/sign-up" },
 ];
 
 const companyLinks = [

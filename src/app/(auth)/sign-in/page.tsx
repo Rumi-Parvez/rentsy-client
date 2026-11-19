@@ -58,11 +58,23 @@ export default function SignInPage() {
     setLoading(true);
 
     try {
+      const requestedRedirect =
+        typeof window !== "undefined"
+          ? new URLSearchParams(
+              window.location.search
+            ).get("redirect")
+          : null;
+
+      const redirectTo =
+        requestedRedirect?.startsWith("/dashboard")
+          ? requestedRedirect
+          : "/dashboard";
+
       const { error } =
         await signIn.email({
           email: cleanEmail,
           password,
-          callbackURL: "/dashboard",
+          callbackURL: redirectTo,
         });
 
       if (error) {
@@ -78,7 +90,7 @@ export default function SignInPage() {
         "Signed in successfully."
       );
 
-      router.push("/dashboard");
+      router.push(redirectTo);
       router.refresh();
     } catch (error: unknown) {
       const message =
@@ -102,9 +114,21 @@ export default function SignInPage() {
     setLoading(true);
 
     try {
+      const requestedRedirect =
+        typeof window !== "undefined"
+          ? new URLSearchParams(
+              window.location.search
+            ).get("redirect")
+          : null;
+
+      const redirectTo =
+        requestedRedirect?.startsWith("/dashboard")
+          ? requestedRedirect
+          : "/dashboard";
+
       await signIn.social({
         provider,
-        callbackURL: "/dashboard",
+        callbackURL: redirectTo,
       });
     } catch (error) {
       console.error(
