@@ -25,7 +25,6 @@ const HERO_CARDS: HeroCardItem[] = [
       "lg:left-[3%] lg:top-[58%] lg:h-28 lg:w-24 xl:left-[5%] xl:h-32 xl:w-28",
     rotateClass: "-rotate-12",
   },
-
   {
     id: "forklift",
     label: "Forklift",
@@ -36,7 +35,6 @@ const HERO_CARDS: HeroCardItem[] = [
       "lg:left-[12%] lg:top-[30%] lg:h-32 lg:w-28 xl:left-[14%] xl:h-36 xl:w-32",
     rotateClass: "-rotate-6",
   },
-
   {
     id: "crane",
     label: "Truck Crane",
@@ -47,7 +45,6 @@ const HERO_CARDS: HeroCardItem[] = [
       "lg:left-[24%] lg:top-[11%] lg:h-32 lg:w-28 xl:left-[25%] xl:h-36 xl:w-32",
     rotateClass: "-rotate-3",
   },
-
   {
     id: "concrete-mixer",
     label: "Concrete Mixer",
@@ -58,7 +55,6 @@ const HERO_CARDS: HeroCardItem[] = [
       "lg:left-[38%] lg:top-[3%] lg:h-32 lg:w-28 xl:left-[39%] xl:h-36 xl:w-32",
     rotateClass: "-rotate-1",
   },
-
   {
     id: "boom-lift",
     label: "Boom Lift",
@@ -69,7 +65,6 @@ const HERO_CARDS: HeroCardItem[] = [
       "lg:left-[52%] lg:top-[3%] lg:h-32 lg:w-28 xl:left-[52%] xl:h-36 xl:w-32",
     rotateClass: "rotate-2",
   },
-
   {
     id: "generator",
     label: "Generator",
@@ -80,7 +75,6 @@ const HERO_CARDS: HeroCardItem[] = [
       "lg:left-[66%] lg:top-[11%] lg:h-32 lg:w-28 xl:left-[65%] xl:h-36 xl:w-32",
     rotateClass: "rotate-5",
   },
-
   {
     id: "scaffolding",
     label: "Scaffolding",
@@ -91,7 +85,6 @@ const HERO_CARDS: HeroCardItem[] = [
       "lg:left-[78%] lg:top-[30%] lg:h-32 lg:w-28 xl:left-[77%] xl:h-36 xl:w-32",
     rotateClass: "rotate-8",
   },
-
   {
     id: "pressure-washer",
     label: "Pressure Washer",
@@ -124,340 +117,121 @@ const HERO_FEATURES = [
 
 export default function HeroSection() {
   return (
-    <section
-      className="
-        relative
-        w-full
-        overflow-hidden
-        bg-white
-        px-4
-        py-12
-        text-slate-900
-        transition-colors
-        duration-300
-        dark:bg-slate-950
-        dark:text-white
-        sm:px-6
-        sm:py-16
-        lg:px-8
-        lg:py-20
-      "
-    >
+    <section className="relative w-full overflow-hidden bg-white px-4 py-12 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-white sm:px-6 sm:py-16 lg:px-8 lg:py-20">
       <div className="relative mx-auto max-w-7xl">
         {/* Mobile / Tablet Equipment Strip */}
-        <div
-          className="
-            mb-10
-            flex
-            items-center
-            gap-4
-            overflow-x-auto
-            px-1
-            pb-4
-            scrollbar-none
-            lg:hidden
-          "
-        >
-          {HERO_CARDS.map((card, index) => (
-            <div
-              key={card.id}
-              className={`
-                group
-                relative
-                h-32
-                w-28
-                shrink-0
-                overflow-hidden
-                rounded-2xl
-                border
-                border-slate-200
-                bg-slate-100
-                transition
-                duration-300
-                dark:border-slate-800
-                dark:bg-slate-900
-                sm:h-36
-                sm:w-32
-                ${index % 2 === 0 ? "-rotate-2" : "rotate-2"}
-              `}
-            >
-              <Image
-                src={card.imageUrl}
-                alt={`${card.label} rental equipment`}
-                fill
-                sizes="128px"
-                className="
-                  object-cover
-                  transition-transform
-                  duration-500
-                  group-hover:scale-110
-                "
-              />
+        <div className="mb-10 flex items-center gap-4 overflow-x-auto px-1 pb-4 scrollbar-none lg:hidden">
+          {HERO_CARDS.map((card, index) => {
+            const tiltClass = index % 2 === 0 ? "-rotate-2" : "rotate-2";
+            const cardClasses = [
+              "group relative h-32 w-28 shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 transition duration-300 dark:border-slate-800 dark:bg-slate-900 sm:h-36 sm:w-32",
+              tiltClass,
+            ].join(" ");
 
-              <div
-                className="
-                  absolute
-                  inset-0
-                  bg-gradient-to-t
-                  from-black/85
-                  via-black/15
-                  to-transparent
-                "
-              />
-
-              <div className="absolute bottom-0 left-0 right-0 p-2.5">
-                <p className="text-[11px] font-bold text-white">
-                  {card.label}
-                </p>
-
-                <p className="mt-0.5 text-[9px] font-medium text-white/70">
-                  {card.category}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Desktop Equipment Arc */}
-        <div
-          className="
-            relative
-            min-h-[500px]
-            sm:min-h-[540px]
-            lg:min-h-[560px]
-            xl:min-h-[600px]
-          "
-        >
-          {/* Equipment Cards */}
-          <div className="pointer-events-none absolute inset-0 hidden lg:block">
-            {HERO_CARDS.map((card) => (
-              <div
+            return (
+              <Link
                 key={card.id}
-                className={`
-                  pointer-events-auto
-                  group
-                  absolute
-                  overflow-hidden
-                  rounded-[20px]
-                  border
-                  border-white/20
-                  bg-slate-100
-                  transition-all
-                  duration-500
-                  hover:z-30
-                  hover:-translate-y-3
-                  hover:scale-110
-                  dark:bg-slate-900
-                  ${card.desktopClass}
-                  ${card.rotateClass}
-                `}
+                href={`/equipment?category=${encodeURIComponent(card.category)}`}
+                className={cardClasses}
               >
                 <Image
                   src={card.imageUrl}
                   alt={`${card.label} rental equipment`}
                   fill
-                  sizes="140px"
-                  className="
-                    object-cover
-                    transition-transform
-                    duration-700
-                    group-hover:scale-110
-                  "
+                  sizes="128px"
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
 
-                {/* Overlay */}
-                <div
-                  className="
-                    absolute
-                    inset-0
-                    bg-gradient-to-t
-                    from-black/85
-                    via-black/20
-                    to-transparent
-                  "
-                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent" />
 
-                {/* Card Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-2.5">
-                  <p
-                    className="
-                      text-[10px]
-                      font-bold
-                      leading-tight
-                      text-white
-                      sm:text-[11px]
-                    "
-                  >
+                  <p className="text-[11px] font-bold text-white">
                     {card.label}
                   </p>
 
-                  <p
-                    className="
-                      mt-0.5
-                      text-[8px]
-                      font-medium
-                      text-white/70
-                    "
-                  >
+                  <p className="mt-0.5 text-[9px] font-medium text-white/70">
                     {card.category}
                   </p>
                 </div>
-              </div>
-            ))}
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Desktop Equipment Arc */}
+        <div className="relative min-h-[500px] sm:min-h-[540px] lg:min-h-[560px] xl:min-h-[600px]">
+          {/* Equipment Cards */}
+          <div className="pointer-events-none absolute inset-0 hidden lg:block">
+            {HERO_CARDS.map((card) => {
+              const desktopCardClasses = [
+                "pointer-events-auto group absolute overflow-hidden rounded-[20px] border border-white/20 bg-slate-100 transition-all duration-500 hover:z-30 hover:-translate-y-3 hover:scale-110 dark:bg-slate-900",
+                card.desktopClass,
+                card.rotateClass,
+              ].join(" ");
+
+              return (
+                <Link
+                  key={card.id}
+                  href={`/equipment?category=${encodeURIComponent(card.category)}`}
+                  className={desktopCardClasses}
+                >
+                  <Image
+                    src={card.imageUrl}
+                    alt={`${card.label} rental equipment`}
+                    fill
+                    sizes="140px"
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+
+                  {/* Card Content */}
+                  <div className="absolute bottom-0 left-0 right-0 p-2.5">
+                    <p className="text-[10px] font-bold leading-tight text-white sm:text-[11px]">
+                      {card.label}
+                    </p>
+
+                    <p className="mt-0.5 text-[8px] font-medium text-white/70">
+                      {card.category}
+                    </p>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
 
           {/* Center Hero Content */}
-          <div
-            className="
-              relative
-              z-10
-              mx-auto
-              flex
-              max-w-3xl
-              flex-col
-              items-center
-              justify-center
-              px-4
-              pt-8
-              text-center
-              sm:px-6
-              lg:pt-36
-              xl:pt-40
-            "
-          >
-            
-
+          <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center justify-center px-4 pt-8 text-center sm:px-6 lg:pt-36 xl:pt-40">
             {/* Heading */}
-            <h1
-              className="
-                mt-20
-                max-w-3xl
-                px-2
-                text-4xl
-                font-extrabold
-                leading-[1.05]
-                tracking-[-0.04em]
-                text-slate-950
-                sm:text-5xl
-                md:text-6xl
-                lg:text-[64px]
-                dark:text-white
-              "
-            >
+            <h1 className="mt-20 max-w-3xl px-2 text-4xl font-extrabold leading-[1.05] tracking-[-0.04em] text-slate-950 dark:text-white sm:text-5xl md:text-6xl lg:text-[64px]">
               Rent Reliable Equipment
-              <span
-                className="
-                  mt-1
-                  block
-                  text-[#6e13f9]
-                  dark:text-[#a66cff]
-                "
-              >
+              <span className="mt-1 block text-[#6e13f9] dark:text-[#a66cff]">
                 Anytime, Anywhere.
               </span>
             </h1>
 
             {/* Description */}
-            <p
-              className="
-                mt-6
-                max-w-2xl
-                px-4
-                text-sm
-                font-medium
-                leading-7
-                text-slate-600
-                sm:text-base
-                sm:leading-8
-                dark:text-slate-400
-              "
-            >
+            <p className="mt-6 max-w-2xl px-4 text-sm font-medium leading-7 text-slate-600 dark:text-slate-400 sm:text-base sm:leading-8">
               Find excavators, forklifts, cranes, generators, concrete
               equipment, and professional site gear. Book what your project
               needs—or list your own equipment and start earning with rEntsy.
             </p>
 
             {/* CTA Buttons */}
-            <div
-              className="
-                mt-8
-                flex
-                w-full
-                flex-col
-                items-center
-                justify-center
-                gap-3
-                px-4
-                sm:w-auto
-                sm:flex-row
-                sm:px-0
-              "
-            >
+            <div className="mt-8 flex w-full flex-col items-center justify-center gap-3 px-4 sm:w-auto sm:flex-row sm:px-0">
               <Link
                 href="/equipment"
-                className="
-                  group
-                  inline-flex
-                  w-full
-                  items-center
-                  justify-center
-                  gap-2
-                  rounded-full
-                  bg-[#6e13f9]
-                  px-7
-                  py-3.5
-                  text-sm
-                  font-bold
-                  text-white
-                  transition-all
-                  duration-300
-                  hover:bg-[#5b0ed6]
-                  hover:-translate-y-0.5
-                  sm:w-auto
-                "
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#6e13f9] px-7 py-3.5 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#5b0ed6] sm:w-auto"
               >
                 <span>Browse Equipment</span>
 
-                <ArrowRight
-                  className="
-                    h-4
-                    w-4
-                    transition-transform
-                    duration-300
-                    group-hover:translate-x-1
-                  "
-                />
+                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
 
               <Link
                 href="/list-equipment"
-                className="
-                  inline-flex
-                  w-full
-                  items-center
-                  justify-center
-                  rounded-full
-                  border
-                  border-slate-300
-                  bg-white/80
-                  px-7
-                  py-3.5
-                  text-sm
-                  font-bold
-                  text-slate-800
-                  backdrop-blur-sm
-                  transition-all
-                  duration-300
-                  hover:-translate-y-0.5
-                  hover:border-[#6e13f9]
-                  hover:text-[#6e13f9]
-                  sm:w-auto
-                  dark:border-slate-700
-                  dark:bg-slate-900/80
-                  dark:text-slate-200
-                  dark:hover:border-[#8b45ff]
-                  dark:hover:text-[#a66cff]
-                "
+                className="inline-flex w-full items-center justify-center rounded-full border border-slate-300 bg-white/80 px-7 py-3.5 text-sm font-bold text-slate-800 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#6e13f9] hover:text-[#6e13f9] dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:border-[#8b45ff] dark:hover:text-[#a66cff] sm:w-auto"
               >
                 List Your Fleet
               </Link>
@@ -466,66 +240,28 @@ export default function HeroSection() {
         </div>
 
         {/* Feature Strip */}
-        <div
-          className="
-            relative
-            z-10
-            mx-auto
-            mt-4
-            grid
-            max-w-5xl
-            grid-cols-1
-            gap-0
-            border-t
-            border-slate-200/80
-            pt-8
-            dark:border-slate-800
-            sm:grid-cols-3
-          "
-        >
-          {HERO_FEATURES.map((item, index) => (
-            <div
-              key={item.title}
-              className={`
-                px-6
-                py-4
-                text-center
-                sm:px-7
-                ${
-                  index !== 0
-                    ? "border-t border-slate-200 sm:border-l sm:border-t-0 dark:border-slate-800"
-                    : ""
-                }
-              `}
-            >
-              <h2
-                className="
-                  text-sm
-                  font-bold
-                  text-slate-900
-                  sm:text-base
-                  dark:text-white
-                "
-              >
-                {item.title}
-              </h2>
+        <div className="relative z-10 mx-auto mt-4 grid max-w-5xl grid-cols-1 gap-0 border-t border-slate-200/80 pt-8 dark:border-slate-800 sm:grid-cols-3">
+          {HERO_FEATURES.map((item, index) => {
+            const dividerClass =
+              index !== 0
+                ? "border-t border-slate-200 sm:border-l sm:border-t-0 dark:border-slate-800"
+                : "";
+            const featureClasses = ["px-6 py-4 text-center sm:px-7", dividerClass]
+              .join(" ")
+              .trim();
 
-              <p
-                className="
-                  mx-auto
-                  mt-2
-                  max-w-xs
-                  text-xs
-                  leading-6
-                  text-slate-500
-                  sm:text-sm
-                  dark:text-slate-400
-                "
-              >
-                {item.description}
-              </p>
-            </div>
-          ))}
+            return (
+              <div key={item.title} className={featureClasses}>
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white sm:text-base">
+                  {item.title}
+                </h2>
+
+                <p className="mx-auto mt-2 max-w-xs text-xs leading-6 text-slate-500 dark:text-slate-400 sm:text-sm">
+                  {item.description}
+                </p>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
