@@ -14,6 +14,7 @@ import {
   Search,
   SlidersHorizontal,
 } from "lucide-react";
+import EquipmentCard from "../components/EquipmentCard";
 
 type EquipmentItem = {
   _id: string;
@@ -373,69 +374,9 @@ function EquipmentCatalogContent() {
         {!loading && !error && equipment.length > 0 && (
           <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {equipment.map((item) => (
-              <div
-                key={item._id}
-                className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-[#6e13f9]/50 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
-              >
-                <div>
-                  <div className="relative h-48 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
-                    <Image
-                      src={item.imageUrl || FALLBACK_EQUIPMENT_IMAGE}
-                      alt={item.equipmentName}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <span className="absolute left-3 top-3 rounded-full bg-slate-950/75 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
-                      {item.category}
-                    </span>
-                  </div>
-
-                  <div className="p-4">
-                    <div className="flex items-start justify-between gap-2">
-                      <h2 className="line-clamp-1 text-base font-bold text-slate-900 dark:text-white">
-                        {item.equipmentName}
-                      </h2>
-                      <span className="shrink-0 rounded-md bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
-                        {item.availableQuantity} Stock
-                      </span>
-                    </div>
-
-                    <p className="mt-1.5 line-clamp-2 text-xs leading-5 text-slate-500 dark:text-slate-400">
-                      {item.description ||
-                        `${item.brand || ""} ${item.model || ""} — ${
-                          item.condition || "Verified"
-                        } equipment`.trim()}
-                    </p>
-
-                    <div className="mt-3 flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-                      <MapPin className="h-3.5 w-3.5 text-[#6e13f9] dark:text-[#a66cff]" />
-                      <span className="truncate">
-                        {item.location || "Available for delivery"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3.5 dark:border-slate-800">
-                  <div>
-                    <span className="text-lg font-extrabold text-[#6e13f9] dark:text-[#a66cff]">
-                      ${item.rentalPrice}
-                    </span>
-                    <span className="ml-1 text-xs font-medium text-slate-500 dark:text-slate-400">
-                      / {item.rentalType || "daily"}
-                    </span>
-                  </div>
-
-                  <Link
-                    href={`/equipment/${item._id}`}
-                    className="inline-flex items-center gap-1 rounded-xl bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-[#6e13f9] dark:bg-slate-800 dark:hover:bg-[#6e13f9]"
-                  >
-                    <span>Details</span>
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                </div>
-              </div>
+             
+                <EquipmentCard key={item._id} equipment={item} />
+             
             ))}
           </div>
         )}
