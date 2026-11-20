@@ -25,7 +25,7 @@ const navLinks = [
   },
   {
     label: "How It's Work",
-    href: "/#how-it-works",
+    href: "/how-it-works",
   },
   {
     label: "Contact",
