@@ -10,7 +10,7 @@ import logoImg from "../../app/assets/rEntsy-Photoroom.png"
 import {
   ArrowUpRight,
   Bell,
-  Boxes,
+
   ChevronDown,
   LayoutDashboard,
   LifeBuoy,
@@ -40,7 +40,7 @@ import { roleLabel } from "@/lib/format";
 import type { DashboardUser } from "@/types/dashboard";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { Imprima } from "next/font/google";
+
 
 const SIDEBAR_KEY = "rentsy-dashboard-sidebar-collapsed";
 
@@ -584,7 +584,7 @@ function SidebarContent({
         )}
       >
         <Link
-          href="/dashboard"
+          href="/"
           className="flex items-center gap-2.5 overflow-hidden"
         >
           <Image
