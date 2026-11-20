@@ -49,7 +49,7 @@ export default function CategoriesSection() {
   return (
     <section
       id="categories"
-      className="w-full border-t border-slate-200/80 bg-white px-4 py-14 text-slate-900 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950 dark:text-white sm:px-6 sm:py-16 lg:px-8 lg:py-20"
+      className="w-full border-t border-slate-200/80 bg-white px-4 py-8 text-slate-900 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950 dark:text-white sm:px-6 sm:py-16 lg:px-8 lg:py-10"
     >
       <div className="mx-auto max-w-7xl">
         {/* Header & Search */}

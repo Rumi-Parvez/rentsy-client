@@ -83,20 +83,20 @@ const trustPoints = [
 export default function HowItWorks() {
   return (
     <section
-      id="how-it-works"
+      
       className="relative overflow-hidden border-t border-slate-200/80 bg-white text-slate-900 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
     >
       {/* Subtle background decoration */}
-      <div className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[700px] -translate-x-1/2 bg-[radial-gradient(circle,rgba(110,19,249,0.09)_0%,rgba(110,19,249,0)_68%)] dark:bg-[radial-gradient(circle,rgba(139,69,255,0.12)_0%,rgba(139,69,255,0)_68%)]" />
+      <div className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[700px] -translate-x-1/2 bg-[radial-gradient(circle,rgba(110,19,249,0.09)_0%,rgba(110,19,249,0)_68%)] dark:bg-[radial-gradient(circle,rgba(139,69,255,0.12)_0%,rgba(139,69,255,0)_68%)]" id="how-it-works" />
 
-      <div className="relative mx-auto max-w-7xl px-5 py-20 sm:px-8 sm:py-24 lg:px-10 lg:py-28">
+      <div className="relative mx-auto max-w-7xl px-5 py-20 sm:px-8 sm:py-24 lg:px-10 lg:py-28" >
         {/* Section Header */}
         <div className="mx-auto max-w-3xl text-center">
-          <span className="inline-flex items-center rounded-full border border-[#6e13f9]/20 bg-[#6e13f9]/5 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#6e13f9] dark:border-[#a66cff]/25 dark:bg-[#6e13f9]/10 dark:text-[#b78aff]">
+          <span className="inline-flex items-center rounded-full border border-[#6e13f9]/20 bg-[#6e13f9]/5 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#6e13f9] dark:border-[#a66cff]/25 dark:bg-[#6e13f9]/10 dark:text-[#b78aff]" >
             Simple rental process
           </span>
 
-          <h2 className="mt-5 text-3xl font-extrabold tracking-[-0.04em] text-slate-950 dark:text-white sm:text-4xl lg:text-5xl">
+          <h2 className="mt-5 text-3xl font-extrabold tracking-[-0.04em] text-slate-950 dark:text-white sm:text-4xl lg:text-5xl" >
             How
             <span className="text-[#6e13f9] dark:text-[#a66cff]"> rEntsy</span>{" "}
             works.

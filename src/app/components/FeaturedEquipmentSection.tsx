@@ -151,16 +151,13 @@ export default function FeaturedEquipmentSection() {
   return (
     <section
       id="featured-equipment"
-      className="w-full border-t border-slate-200/80 bg-slate-50 px-4 py-16 text-slate-900 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950 dark:text-white sm:px-6 sm:py-20 lg:px-8 lg:py-24"
+      className="w-full border-t border-slate-200/80 bg-slate-50 px-4 py-12 text-slate-900 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950 dark:text-white sm:px-6 sm:py-20 lg:px-8 lg:py-20"
     >
       <div className="mx-auto max-w-7xl">
         {/* Section Header */}
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#6e13f9]/20 bg-[#6e13f9]/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-[#6e13f9] dark:border-[#a66cff]/25 dark:text-[#b78aff]">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Featured Fleet</span>
-            </div>
+            
 
             <h2 className="text-3xl font-extrabold leading-[1.1] tracking-tight sm:text-4xl lg:text-5xl">
               Top approved{" "}
