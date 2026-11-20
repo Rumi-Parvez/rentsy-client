@@ -711,7 +711,7 @@ function SidebarContent({
               manage listings, bookings and payments.
             </p>
             <Link
-              href="contact"
+              href="/contact"
               className="mt-2.5 inline-flex h-7 items-center justify-center rounded-md bg-white px-3 text-[10px] font-bold text-[#3b0c8f] transition hover:bg-purple-50"
             >
               Contact support

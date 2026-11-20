@@ -3,6 +3,12 @@ import { authClient } from "@/lib/auth-client";
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
+/**
+ * Origin of the Express API without the trailing "/api" segment.
+ * Useful for building URLs to public endpoints.
+ */
+export const SERVER_URL = API_URL.replace(/\/api\/?$/, "");
+
 export class ApiError extends Error {
   status: number;
 

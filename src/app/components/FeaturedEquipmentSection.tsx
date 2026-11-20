@@ -8,12 +8,13 @@ import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   CheckCircle2,
-  Loader2,
   MapPin,
   RefreshCw,
   Sparkles,
 } from "lucide-react";
 import EquipmentCard from "./EquipmentCard";
+import { SERVER_URL } from "@/lib/api";
+import { authClient } from "@/lib/auth-client";
 
 type MongoObjectId = string | { $oid?: string };
 
@@ -33,8 +34,7 @@ type FeaturedEquipmentItem = {
   status?: string;
 };
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_SERVER || "http://localhost:5000";
+const API_BASE_URL = SERVER_URL;
 
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1503708928676-1cb796a0891e?auto=format&fit=crop&w=900&q=80";
@@ -43,47 +43,6 @@ function normalizeId(val?: MongoObjectId): string {
   if (!val) return "";
   if (typeof val === "string") return val;
   return val.$oid || "";
-}
-
-function isUserLoggedIn(): boolean {
-  if (typeof window === "undefined") return false;
-
-  const token =
-    window.localStorage.getItem("rentsy_token") ||
-    window.localStorage.getItem("token") ||
-    window.sessionStorage.getItem("rentsy_token") ||
-    window.sessionStorage.getItem("token");
-
-  if (token && token.trim() !== "") {
-    return true;
-  }
-
-  const storedUser =
-    window.localStorage.getItem("rentsy_user") ||
-    window.localStorage.getItem("user");
-
-  if (storedUser) {
-    try {
-      const parsed = JSON.parse(storedUser);
-      if (parsed && (parsed.email || parsed.id || parsed._id || parsed.user)) {
-        return true;
-      }
-    } catch {
-      // Ignore invalid JSON
-    }
-  }
-
-  // Fallback check for non-HttpOnly session/auth cookies if present
-  const cookieStr = document.cookie || "";
-  if (
-    cookieStr.includes("better-auth.session_token=") ||
-    cookieStr.includes("rentsy_auth=") ||
-    cookieStr.includes("token=")
-  ) {
-    return true;
-  }
-
-  return false;
 }
 
 export default function FeaturedEquipmentSection() {
@@ -137,11 +96,20 @@ export default function FeaturedEquipmentSection() {
     return () => window.clearTimeout(timer);
   }, []);
 
-  const handleViewDetails = (id: string) => {
+  const handleViewDetails = async (id: string) => {
+    if (!id) return;
+
     const targetPath = `/equipment/${id}`;
 
-    if (!isUserLoggedIn()) {
-      router.push(`/login?callbackUrl=${encodeURIComponent(targetPath)}`);
+    try {
+      const { data: session } = await authClient.getSession();
+
+      if (!session?.user) {
+        router.push(`/sign-in?redirect=${encodeURIComponent(targetPath)}`);
+        return;
+      }
+    } catch {
+      router.push(`/sign-in?redirect=${encodeURIComponent(targetPath)}`);
       return;
     }
 
@@ -183,11 +151,24 @@ export default function FeaturedEquipmentSection() {
 
         {/* Loading State */}
         {loading && (
-          <div className="mt-12 flex min-h-[300px] items-center justify-center rounded-3xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/60">
-            <div className="flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
-              <Loader2 className="h-5 w-5 animate-spin text-[#6e13f9]" />
-              <span>Loading featured equipment...</span>
-            </div>
+          <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div
+                key={index}
+                className="overflow-hidden rounded-3xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+              >
+                <div className="h-52 w-full animate-pulse bg-slate-200 dark:bg-slate-800 sm:h-56" />
+                <div className="animate-pulse space-y-3 p-5">
+                  <div className="h-5 w-3/4 rounded-full bg-slate-200 dark:bg-slate-800" />
+                  <div className="h-3 w-full rounded-full bg-slate-100 dark:bg-slate-800/70" />
+                  <div className="h-3 w-5/6 rounded-full bg-slate-100 dark:bg-slate-800/70" />
+                  <div className="flex items-center justify-between pt-2">
+                    <div className="h-6 w-24 rounded-full bg-slate-200 dark:bg-slate-800" />
+                    <div className="h-8 w-20 rounded-full bg-slate-200 dark:bg-slate-800" />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
@@ -230,7 +211,13 @@ export default function FeaturedEquipmentSection() {
               const id = normalizeId(item._id);
 
               return (
-                <EquipmentCard key={id} equipment={item} />
+                <EquipmentCard
+                  key={id}
+                  equipment={item}
+                  onViewDetails={(equipmentId) =>
+                    void handleViewDetails(equipmentId)
+                  }
+                />
               );
             })}
           </div>

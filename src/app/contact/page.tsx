@@ -75,6 +75,7 @@ export default function ContactPage() {
     }
 
     setLoading(true);
+
     try {
       const res = await fetch(`${API_URL}/contacts`, {
         method: "POST",

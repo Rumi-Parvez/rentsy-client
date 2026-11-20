@@ -65,10 +65,14 @@ export default function SignInPage() {
             ).get("redirect")
           : null;
 
-      const redirectTo =
-        requestedRedirect?.startsWith("/dashboard")
-          ? requestedRedirect
-          : "/dashboard";
+      const isSafeRedirect =
+        Boolean(requestedRedirect) &&
+        requestedRedirect!.startsWith("/") &&
+        !requestedRedirect!.startsWith("//");
+
+      const redirectTo = isSafeRedirect
+        ? requestedRedirect!
+        : "/dashboard";
 
       const { error } =
         await signIn.email({
@@ -121,10 +125,14 @@ export default function SignInPage() {
             ).get("redirect")
           : null;
 
-      const redirectTo =
-        requestedRedirect?.startsWith("/dashboard")
-          ? requestedRedirect
-          : "/dashboard";
+      const isSafeRedirect =
+        Boolean(requestedRedirect) &&
+        requestedRedirect!.startsWith("/") &&
+        !requestedRedirect!.startsWith("//");
+
+      const redirectTo = isSafeRedirect
+        ? requestedRedirect!
+        : "/dashboard";
 
       await signIn.social({
         provider,

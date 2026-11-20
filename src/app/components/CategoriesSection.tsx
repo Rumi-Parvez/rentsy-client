@@ -3,16 +3,16 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Loader2, RefreshCw, Search } from "lucide-react";
+import { ArrowRight, RefreshCw, Search } from "lucide-react";
 
 import {
   DEFAULT_EQUIPMENT_CATEGORIES,
   fetchEquipmentCategories,
   type EquipmentCategory,
 } from "@/lib/equipmentCategories";
+import { SERVER_URL } from "@/lib/api";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_SERVER || "http://localhost:5000";
+const API_BASE_URL = SERVER_URL;
 
 export default function CategoriesSection() {
   const [categories, setCategories] = useState<EquipmentCategory[]>(
@@ -95,9 +95,17 @@ export default function CategoriesSection() {
 
         {/* Loading State */}
         {loading && (
-          <div className="mt-8 flex items-center justify-center gap-2.5 rounded-2xl border border-slate-200 bg-slate-50 py-10 text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900/50 dark:text-slate-400">
-            <Loader2 className="h-5 w-5 animate-spin text-[#6e13f9]" />
-            <span>Loading categories...</span>
+          <div className="mt-8 flex items-start gap-6 overflow-hidden pb-4 pt-1 lg:grid lg:grid-cols-6 lg:gap-5">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div
+                key={index}
+                className="flex w-32 shrink-0 animate-pulse flex-col items-center lg:w-auto"
+              >
+                <div className="h-24 w-24 rounded-full bg-slate-200 dark:bg-slate-800 sm:h-28 sm:w-28" />
+                <div className="mt-4 h-3 w-20 rounded-full bg-slate-200 dark:bg-slate-800" />
+                <div className="mt-2 h-2.5 w-24 rounded-full bg-slate-100 dark:bg-slate-800/70" />
+              </div>
+            ))}
           </div>
         )}
 

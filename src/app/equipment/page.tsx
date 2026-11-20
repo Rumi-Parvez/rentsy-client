@@ -8,13 +8,13 @@ import { useSearchParams, useRouter } from "next/navigation";
 import {
   ArrowRight,
   Filter,
-  Loader2,
   MapPin,
   RefreshCw,
   Search,
   SlidersHorizontal,
 } from "lucide-react";
 import EquipmentCard from "../components/EquipmentCard";
+import { SERVER_URL } from "@/lib/api";
 
 type EquipmentItem = {
   _id: string;
@@ -32,8 +32,7 @@ type EquipmentItem = {
   ownerName?: string;
 };
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_SERVER || "http://localhost:5000";
+const API_BASE_URL = SERVER_URL;
 
 const FALLBACK_EQUIPMENT_IMAGE =
   "https://d2uhsaoc6ysewq.cloudfront.net/28475/Excavators-John-Deere-160G-LC-24984571.jpg";
@@ -328,11 +327,25 @@ function EquipmentCatalogContent() {
 
         {/* Loading */}
         {loading && (
-          <div className="mt-10 flex min-h-[280px] items-center justify-center rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-            <div className="flex items-center gap-2.5 text-sm text-slate-500 dark:text-slate-400">
-              <Loader2 className="h-5 w-5 animate-spin text-[#6e13f9]" />
-              <span>Loading available equipment...</span>
-            </div>
+          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <div
+                key={index}
+                className="overflow-hidden rounded-3xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+              >
+                <div className="h-52 w-full animate-pulse bg-slate-200 dark:bg-slate-800 sm:h-56" />
+                <div className="animate-pulse space-y-3 p-5">
+                  <div className="h-5 w-3/4 rounded-full bg-slate-200 dark:bg-slate-800" />
+                  <div className="h-3 w-full rounded-full bg-slate-100 dark:bg-slate-800/70" />
+                  <div className="h-3 w-5/6 rounded-full bg-slate-100 dark:bg-slate-800/70" />
+                  <div className="h-3 w-1/2 rounded-full bg-slate-100 dark:bg-slate-800/70" />
+                  <div className="flex items-center justify-between pt-2">
+                    <div className="h-6 w-24 rounded-full bg-slate-200 dark:bg-slate-800" />
+                    <div className="h-8 w-20 rounded-full bg-slate-200 dark:bg-slate-800" />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
@@ -372,7 +385,7 @@ function EquipmentCatalogContent() {
 
         {/* Grid */}
         {!loading && !error && equipment.length > 0 && (
-          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {equipment.map((item) => (
              
                 <EquipmentCard key={item._id} equipment={item} />
@@ -389,8 +402,20 @@ export default function EquipmentPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-950">
-          <Loader2 className="h-6 w-6 animate-spin text-[#6e13f9]" />
+        <div className="min-h-screen w-full bg-slate-50 px-4 py-10 dark:bg-slate-950 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl animate-pulse">
+            <div className="h-9 w-72 rounded-full bg-slate-200 dark:bg-slate-800" />
+            <div className="mt-3 h-3 w-96 max-w-full rounded-full bg-slate-200 dark:bg-slate-800" />
+            <div className="mt-8 h-28 rounded-2xl bg-slate-200 dark:bg-slate-800" />
+            <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 8 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="h-80 rounded-3xl bg-slate-200 dark:bg-slate-800"
+                />
+              ))}
+            </div>
+          </div>
         </div>
       }
     >
