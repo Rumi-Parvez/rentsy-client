@@ -166,9 +166,23 @@ export default function RegisterPage() {
       return;
     }
 
-    if (formData.password.length < 8) {
+    if (formData.password.length < 6) {
       toast.error(
-        "Password must be at least 8 characters."
+        "Password must be at least 6 characters long."
+      );
+      return;
+    }
+
+    if (!/[A-Z]/.test(formData.password)) {
+      toast.error(
+        "Password must contain at least one uppercase letter."
+      );
+      return;
+    }
+
+    if (!/[a-z]/.test(formData.password)) {
+      toast.error(
+        "Password must contain at least one lowercase letter."
       );
       return;
     }
@@ -277,22 +291,17 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      // Save selected role temporarily.
-      // Social auth will use this later when
-      // syncing the user with the backend.
-      if (
-        typeof window !== "undefined"
-      ) {
-        localStorage.setItem(
-          "rentsy_pending_role",
-          formData.role
-        );
-      }
-
-      await signIn.social({
+      const { error } = await signIn.social({
         provider,
         callbackURL: "/dashboard",
       });
+
+      if (error) {
+        toast.error(
+          error.message || `Failed to sign up with ${provider}.`
+        );
+        setLoading(false);
+      }
     } catch (error) {
       console.error(
         "Social authentication error:",
@@ -476,7 +485,7 @@ export default function RegisterPage() {
                     onChange={
                       handleChange
                     }
-                    placeholder="Minimum 8 characters"
+                    placeholder="Min 6 chars, upper & lowercase"
                     className="w-full rounded-lg border border-slate-200 bg-white py-2.5 pl-3.5 pr-10 text-sm text-slate-900 outline-none transition focus:border-[#6e13f9] focus:ring-2 focus:ring-[#6e13f9]/15 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-[#8b45ff]"
                   />
 

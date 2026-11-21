@@ -21,6 +21,10 @@ import {
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { API_URL, getAccessToken } from "@/lib/api";
+import {
+  calculateRentalUnits,
+  getTodayDateInputValue,
+} from "@/lib/rental";
 
 type MongoObjectId = string | { $oid?: string };
 type MongoDate = string | { $date?: string };
@@ -62,43 +66,6 @@ function normalizeDateString(val?: MongoDate): string {
   if (typeof val === "string") return val;
   return val.$date || "";
 }
-
-function getTodayDateInputValue(): string {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
-function calculateRentalUnits(
-  startDateStr: string,
-  endDateStr: string,
-  rentalType?: string
-): number {
-  if (!startDateStr || !endDateStr) return 1;
-
-  const start = new Date(`${startDateStr}T00:00:00`);
-  const end = new Date(`${endDateStr}T00:00:00`);
-  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return 1;
-
-  const diffMs = Math.max(0, end.getTime() - start.getTime());
-  const diffDays =
-    Math.max(1, Math.round(diffMs / (1000 * 60 * 60 * 24)) + 1);
-
-  switch ((rentalType || "daily").toLowerCase()) {
-    case "hourly":
-      return diffDays * 8;
-    case "weekly":
-      return Math.max(1, Math.ceil(diffDays / 7));
-    case "monthly":
-      return Math.max(1, Math.ceil(diffDays / 30));
-    case "daily":
-    default:
-      return diffDays;
-  }
-}
-
 
 export default function EquipmentDetailPage() {
   const params = useParams<{ id: string }>();
@@ -404,55 +371,36 @@ export default function EquipmentDetailPage() {
     setSubmitting(true);
 
     try {
-      const token = await getAccessToken();
       const resolvedId = normalizeId(item._id) || equipmentId;
 
-      const res = await fetch(`${API_URL}/payments/checkout`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          equipmentId: resolvedId,
-          rentalStartDate: startDate,
-          rentalEndDate: endDate,
-          requiredQuantity: safeQuantity,
-          contactNumber: contactNumber.trim(),
-          deliveryAddress: deliveryAddress.trim(),
-          additionalNotes: notes.trim(),
-        }),
-      });
-
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok || data.success === false) {
-        toast.error(data.message || "Could not start the checkout.");
-        return;
+      // Keep the customer's delivery details for the checkout page.
+      // They are short-lived, per-tab values, not permanent storage.
+      if (typeof window !== "undefined") {
+        window.sessionStorage.setItem(
+          "rentsy_checkout_draft",
+          JSON.stringify({
+            equipmentId: resolvedId,
+            contactNumber: contactNumber.trim(),
+            deliveryAddress: deliveryAddress.trim(),
+            additionalNotes: notes.trim(),
+          })
+        );
       }
 
-      toast.success(
-        data.mode === "stripe"
-          ? "Redirecting to secure Stripe checkout..."
-          : "Demo checkout ready. Confirming your payment..."
+      setIsModalOpen(false);
+
+      router.push(
+        `/checkout?equipmentId=${encodeURIComponent(
+          resolvedId
+        )}&start=${encodeURIComponent(startDate)}&end=${encodeURIComponent(
+          endDate
+        )}&qty=${safeQuantity}`
       );
-
-      if (typeof data.url === "string" && data.url.startsWith("http")) {
-        window.location.href = data.url;
-        return;
-      }
-
-      if (typeof data.redirectUrl === "string") {
-        router.push(data.redirectUrl);
-        return;
-      }
-
-      toast.error("Checkout did not return a payment link.");
     } catch (err) {
       toast.error(
         err instanceof Error
           ? err.message
-          : "Network error while creating the booking."
+          : "Could not open the checkout page."
       );
     } finally {
       setSubmitting(false);

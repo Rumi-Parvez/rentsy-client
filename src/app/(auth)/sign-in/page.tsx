@@ -16,9 +16,8 @@ import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 
 import logoImg from "../../assets/rEntsy-Photoroom.png";
-import {
-  signIn,
-} from "@/lib/auth-client";
+import { signIn } from "@/lib/auth-client";
+import { clearTokenCache } from "@/lib/api";
 
 const CRANE_IMAGE_URL =
   "https://cdn.prod.website-files.com/6246d8c921709e497eef110f/67f550a672bb91ad04255caa_intermodal-container-tracking.jpg";
@@ -94,6 +93,7 @@ export default function SignInPage() {
         "Signed in successfully."
       );
 
+      clearTokenCache();
       router.push(redirectTo);
       router.refresh();
     } catch (error: unknown) {
@@ -134,10 +134,17 @@ export default function SignInPage() {
         ? requestedRedirect!
         : "/dashboard";
 
-      await signIn.social({
+      const { error } = await signIn.social({
         provider,
         callbackURL: redirectTo,
       });
+
+      if (error) {
+        toast.error(
+          error.message || `Failed to sign in with ${provider}.`
+        );
+        setLoading(false);
+      }
     } catch (error) {
       console.error(
         "Social sign-in error:",

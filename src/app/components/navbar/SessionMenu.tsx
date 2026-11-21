@@ -5,6 +5,7 @@ import Link from "next/link";
 import { HiArrowRightOnRectangle, HiUserCircle } from "react-icons/hi2";
 
 import { authClient } from "@/lib/auth-client";
+import { clearTokenCache } from "@/lib/api";
 
 type SessionUser = {
   id?: string;
@@ -27,6 +28,7 @@ export default function SessionMenu({
 
   const handleSignOut = async () => {
     await authClient.signOut();
+    clearTokenCache();
     onAction?.();
     window.location.href = "/";
   };
