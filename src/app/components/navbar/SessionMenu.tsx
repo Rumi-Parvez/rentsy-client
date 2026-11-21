@@ -1,11 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { HiArrowRightOnRectangle, HiUserCircle } from "react-icons/hi2";
 
-import { authClient } from "@/lib/auth-client";
 import { clearTokenCache } from "@/lib/api";
+import { authClient } from "@/lib/auth-client";
 
 type SessionUser = {
   id?: string;
@@ -24,7 +25,10 @@ export default function SessionMenu({
   onAction,
 }: SessionMenuProps) {
   const { data: session, isPending } = authClient.useSession();
+
   const user = session?.user as SessionUser | undefined;
+
+  const [imageError, setImageError] = useState(false);
 
   const handleSignOut = async () => {
     await authClient.signOut();
@@ -45,7 +49,8 @@ export default function SessionMenu({
     );
   }
 
-  /* ================= GUEST (NOT SIGNED IN) ================= */
+  /* ================= GUEST ================= */
+
   if (!user) {
     if (variant === "mobile") {
       return (
@@ -57,6 +62,7 @@ export default function SessionMenu({
           >
             Sign In
           </Link>
+
           <Link
             href="/sign-up"
             onClick={onAction}
@@ -77,6 +83,7 @@ export default function SessionMenu({
         >
           Sign In
         </Link>
+
         <Link
           href="/sign-up"
           className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-full bg-[#6e13f9] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#5b0ed6]"
@@ -88,9 +95,14 @@ export default function SessionMenu({
     );
   }
 
-  /* ================= SIGNED IN (DIRECT LINKS, NO PROFILE DROPDOWN) ================= */
-  const displayName = user.name?.trim() || user.email?.split("@")[0] || "User";
+  /* ================= SIGNED IN ================= */
+
+  const displayName =
+    user.name?.trim() || user.email?.split("@")[0] || "User";
+
   const firstLetter = displayName.charAt(0).toUpperCase();
+
+  const hasProfileImage = Boolean(user.image) && !imageError;
 
   if (variant === "mobile") {
     return (
@@ -104,6 +116,7 @@ export default function SessionMenu({
             <HiUserCircle className="h-5 w-5 text-[#6e13f9] dark:text-[#a66cff]" />
             <span>Dashboard</span>
           </span>
+
           <span className="text-xs text-slate-400">↗</span>
         </Link>
 
@@ -125,19 +138,21 @@ export default function SessionMenu({
         href="/dashboard"
         className="inline-flex min-h-9 items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:border-[#6e13f9] hover:text-[#6e13f9] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#8b45ff]"
       >
-        {user.image ? (
+        {hasProfileImage ? (
           <Image
-            src={user.image}
-            alt={displayName}
+            src={user.image!}
+            alt={`${displayName}'s profile`}
             width={24}
             height={24}
             className="h-6 w-6 rounded-full object-cover"
+            onError={() => setImageError(true)}
           />
         ) : (
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#6e13f9] text-xs font-bold text-white">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#6e13f9] text-xs font-bold text-white">
             {firstLetter}
           </span>
         )}
+
         <span>Dashboard</span>
       </Link>
 

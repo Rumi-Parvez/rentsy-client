@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
+import Link from "next/link";
+
 import {
   ArrowRight,
   ArrowUpRight,
@@ -128,7 +129,7 @@ function OverviewBanner({
       <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
         <div className="max-w-2xl">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white ring-1 ring-inset ring-white/20">
-            <Sparkles className="h-3 w-3" />
+            
             {roleLabel(user.role)} workspace · {today}
           </span>
 

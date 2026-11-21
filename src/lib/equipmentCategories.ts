@@ -1,4 +1,3 @@
-import { getAccessToken } from "@/lib/api";
 
 export type EquipmentCategory = {
   name: string;
@@ -65,13 +64,19 @@ export const DEFAULT_EQUIPMENT_CATEGORIES: EquipmentCategory[] = [
   },
 ];
 
-export function getCategoriesEndpoint(baseUrl: string, searchQuery = ""): string {
+export function getCategoriesEndpoint(
+  baseUrl: string,
+  searchQuery = ""
+): string {
   const cleanBase = baseUrl.replace(/\/+$/, "");
   const params = new URLSearchParams();
+
   if (searchQuery.trim()) {
     params.set("q", searchQuery.trim());
   }
+
   const qs = params.toString();
+
   return `${cleanBase}/api/equipment/categories${qs ? `?${qs}` : ""}`;
 }
 
@@ -81,24 +86,27 @@ export async function fetchEquipmentCategories(
 ): Promise<EquipmentCategory[]> {
   const endpoint = getCategoriesEndpoint(baseUrl, searchQuery);
 
-  const token = await getAccessToken();
+  // Public GET request: no JWT required.
   const response = await fetch(endpoint, {
     method: "GET",
     headers: {
       Accept: "application/json",
-      Authorization: `Bearer ${token}`,
     },
     cache: "no-store",
   });
 
   const contentType = response.headers.get("content-type");
+
   if (!contentType?.includes("application/json")) {
     throw new Error("Server returned an invalid response.");
   }
 
   const data = await response.json();
+
   if (!response.ok || !data.success) {
-    throw new Error(data.message || "Failed to load equipment categories.");
+    throw new Error(
+      data.message || "Failed to load equipment categories."
+    );
   }
 
   const list: EquipmentCategory[] = Array.isArray(data.categories)
