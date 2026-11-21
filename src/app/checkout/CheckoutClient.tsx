@@ -165,7 +165,13 @@ export default function CheckoutClient() {
 
         const response = await fetch(
           `${API_URL}/equipment/${equipmentId}`,
-          { cache: "no-store" }
+          {
+            cache: "no-store",
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${await getAccessToken()}`,
+            },
+          }
         );
         const data = await response.json().catch(() => ({}));
 

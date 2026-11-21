@@ -205,7 +205,12 @@ export default function EquipmentDetailPage() {
         setLoading(true);
         setError("");
 
+        const token = await getAccessToken();
         const res = await fetch(`${API_URL}/equipment/${equipmentId}`, {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
           cache: "no-store",
         });
         const data = await res.json();
@@ -528,9 +533,7 @@ export default function EquipmentDetailPage() {
                     <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
                       {item.equipmentName}
                     </h1>
-                    <p className="mt-1 font-mono text-[11px] text-slate-400">
-                      ID: {displayId}
-                    </p>
+                    
 
                     <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-slate-600 dark:text-slate-400">
                       <span className="inline-flex items-center gap-1">

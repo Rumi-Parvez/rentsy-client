@@ -14,7 +14,7 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import EquipmentCard from "../components/EquipmentCard";
-import { SERVER_URL } from "@/lib/api";
+import { getAccessToken, SERVER_URL } from "@/lib/api";
 
 type EquipmentItem = {
   _id: string;
@@ -81,7 +81,12 @@ function EquipmentCatalogContent() {
 
     const loadMeta = async () => {
       try {
+        const token = await getAccessToken();
         const res = await fetch(`${API_BASE_URL}/api/equipment/meta`, {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
           cache: "no-store",
         });
         const data = await res.json();
@@ -121,9 +126,13 @@ function EquipmentCatalogContent() {
         params.toString() ? `?${params.toString()}` : ""
       }`;
 
+      const token = await getAccessToken();
       const res = await fetch(url, {
         method: "GET",
-        headers: { Accept: "application/json" },
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         cache: "no-store",
       });
 

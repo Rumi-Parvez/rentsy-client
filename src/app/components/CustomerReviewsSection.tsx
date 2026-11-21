@@ -118,7 +118,7 @@ export default function CustomerReviewsSection() {
               <div>
                 <div className="flex items-center justify-between gap-2">
                   <RatingStars rating={review.rating} />
-                  <span className="rounded-full bg-[#6e13f9]/10 px-2.5 py-0.5 text-[10px] font-bold text-[#6e13f9] dark:text-[#b78aff]">
+                  <span className="rounded-full bg-[#6e13f9]/10 px-2.5 py-0.5 text-[8px] font-bold text-[#6e13f9] dark:text-[#b78aff]">
                     {review.category}
                   </span>
                 </div>

@@ -1,3 +1,5 @@
+import { getAccessToken } from "@/lib/api";
+
 export type EquipmentCategory = {
   name: string;
   slug: string;
@@ -79,9 +81,13 @@ export async function fetchEquipmentCategories(
 ): Promise<EquipmentCategory[]> {
   const endpoint = getCategoriesEndpoint(baseUrl, searchQuery);
 
+  const token = await getAccessToken();
   const response = await fetch(endpoint, {
     method: "GET",
-    headers: { Accept: "application/json" },
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
     cache: "no-store",
   });
 

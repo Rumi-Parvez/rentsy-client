@@ -13,7 +13,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import EquipmentCard from "./EquipmentCard";
-import { SERVER_URL } from "@/lib/api";
+import { getAccessToken, SERVER_URL } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
 
 type MongoObjectId = string | { $oid?: string };
@@ -57,11 +57,15 @@ export default function FeaturedEquipmentSection() {
       setLoading(true);
       setError("");
 
+      const token = await getAccessToken();
       const res = await fetch(
         `${API_BASE_URL}/api/equipment?status=approved&limit=6&sort=recent`,
         {
           method: "GET",
-          headers: { Accept: "application/json" },
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
           cache: "no-store",
         }
       );
