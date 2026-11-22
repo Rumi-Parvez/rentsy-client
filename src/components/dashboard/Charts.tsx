@@ -25,6 +25,14 @@ const tooltipStyle = {
   boxShadow: "0 10px 30px rgba(15, 23, 42, 0.12)",
 };
 
+const compactCurrency = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  notation: "compact",
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 1,
+});
+
 export function MonthlyBarChart({
   data,
   color = "#6e13f9",
@@ -67,7 +75,9 @@ export function MonthlyBarChart({
             tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
             width={54}
             tickFormatter={(value: number) =>
-              currency ? `${Math.round(value / 1000)}k` : String(value)
+              currency
+                ? compactCurrency.format(value)
+                : formatNumber(value)
             }
           />
           <Tooltip
