@@ -84,7 +84,6 @@ export default function EquipmentDetailPage() {
   // Session & favorites state
   const [userRole, setUserRole] = useState("");
   const [signedIn, setSignedIn] = useState(false);
-  const [sessionChecked, setSessionChecked] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
 
@@ -170,10 +169,6 @@ export default function EquipmentDetailPage() {
           setSignedIn(false);
           setUserRole("");
         }
-      } finally {
-        if (active) {
-          setSessionChecked(true);
-        }
       }
     };
 
@@ -183,21 +178,7 @@ export default function EquipmentDetailPage() {
     };
   }, [equipmentId]);
 
-  // Equipment details are a private route: visitors are sent to sign in
-  // and returned to this listing after authentication.
-  useEffect(() => {
-    if (!sessionChecked || signedIn || !equipmentId) return;
-
-    const timer = window.setTimeout(() => {
-      router.replace(
-        `/sign-in?redirect=${encodeURIComponent(`/equipment/${equipmentId}`)}`
-      );
-    }, 0);
-
-    return () => window.clearTimeout(timer);
-  }, [sessionChecked, signedIn, equipmentId, router]);
-
-  // Load equipment item
+  // Approved equipment details are public and can be fetched without a session.
   useEffect(() => {
     if (!equipmentId) return;
     let active = true;
@@ -207,11 +188,9 @@ export default function EquipmentDetailPage() {
         setLoading(true);
         setError("");
 
-        const token = await getAccessToken();
         const res = await fetch(`${API_URL}/equipment/${equipmentId}`, {
           headers: {
             Accept: "application/json",
-            Authorization: `Bearer ${token}`,
           },
           cache: "no-store",
         });
@@ -414,7 +393,7 @@ export default function EquipmentDetailPage() {
     }
   };
 
-  if (loading || !sessionChecked || !signedIn) {
+  if (loading) {
     return (
       <div className="min-h-screen w-full bg-slate-50 px-4 py-10 dark:bg-slate-950 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl animate-pulse">
