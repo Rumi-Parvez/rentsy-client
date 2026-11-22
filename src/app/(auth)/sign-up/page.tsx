@@ -21,15 +21,12 @@ import {
   signIn,
   signUp,
 } from "@/lib/auth-client";
+import { API_URL } from "@/lib/api";
 
 type SignUpRole = "customer" | "owner";
 
 const CRANE_IMAGE_URL =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTk5iCFNqhjCZQXBgZ64B_J9bBtvZPqnnWt67SBUSezz8XuUNIBCnxNuGd0&s=10";
-
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000/api";
 
 export default function RegisterPage() {
   const router = useRouter();

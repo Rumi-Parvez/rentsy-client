@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "@/components/ImageWithFallback";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { API_URL } from "@/lib/api";
 
 import {
   Check,
@@ -15,8 +16,6 @@ import {
 } from "lucide-react";
 
 import logoImg from "../../app/assets/rEntsy-Photoroom.png";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 const SUPPORT_EMAIL = "help@rentsy.com";
 const SUPPORT_PHONE = "01407794143";
