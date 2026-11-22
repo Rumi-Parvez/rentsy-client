@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "@/components/ImageWithFallback";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
+import Image from "@/components/ImageWithFallback";
 
 import {
   Eye,
@@ -16,12 +17,12 @@ import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 
 import logoImg from "../../assets/rEntsy-Photoroom.png";
+
 import {
   authClient,
   signIn,
   signUp,
 } from "@/lib/auth-client";
-import { API_URL } from "@/lib/api";
 
 type SignUpRole = "customer" | "owner";
 
@@ -41,11 +42,12 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] =
     useState(false);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] =
+    useState(false);
 
-  // ----------------------------------------
+  // =====================================================
   // Input Change
-  // ----------------------------------------
+  // =====================================================
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -58,9 +60,9 @@ export default function RegisterPage() {
     }));
   };
 
-  // ----------------------------------------
+  // =====================================================
   // Role Selection
-  // ----------------------------------------
+  // =====================================================
 
   const handleRoleSelect = (
     selectedRole: SignUpRole
@@ -71,56 +73,9 @@ export default function RegisterPage() {
     }));
   };
 
-  // ----------------------------------------
-  // Sync User With Express Backend
-  // ----------------------------------------
-
-  const syncUserWithBackend = async (userData: {
-    name: string;
-    email: string;
-    image: string;
-    phone: string;
-    address: string;
-    role: SignUpRole;
-  }) => {
-    const { data: tokenData } =
-      await authClient.token();
-
-    const token = tokenData?.token;
-
-    if (!token) {
-      throw new Error(
-        "Failed to retrieve JWT token after registration."
-      );
-    }
-
-    const response = await fetch(
-      `${API_URL}/users`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(userData),
-      }
-    );
-
-    const result = await response.json();
-
-    if (!response.ok || !result.success) {
-      throw new Error(
-        result.message ||
-          "Failed to sync user with backend."
-      );
-    }
-
-    return result.user;
-  };
-
-  // ----------------------------------------
+  // =====================================================
   // Email Registration
-  // ----------------------------------------
+  // =====================================================
 
   const handleSubmit = async (
     e: React.FormEvent
@@ -133,12 +88,9 @@ export default function RegisterPage() {
     const cleanEmail =
       formData.email.trim().toLowerCase();
 
-    const selectedRole =
-      formData.role;
-
-    // -----------------------------
+    // =================================================
     // Validation
-    // -----------------------------
+    // =================================================
 
     if (
       !cleanName ||
@@ -151,21 +103,31 @@ export default function RegisterPage() {
       return;
     }
 
-    if (formData.password.length < 6) {
+    if (
+      formData.password.length < 6
+    ) {
       toast.error(
         "Password must be at least 6 characters long."
       );
       return;
     }
 
-    if (!/[A-Z]/.test(formData.password)) {
+    if (
+      !/[A-Z]/.test(
+        formData.password
+      )
+    ) {
       toast.error(
         "Password must contain at least one uppercase letter."
       );
       return;
     }
 
-    if (!/[a-z]/.test(formData.password)) {
+    if (
+      !/[a-z]/.test(
+        formData.password
+      )
+    ) {
       toast.error(
         "Password must contain at least one lowercase letter."
       );
@@ -175,28 +137,16 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      // ----------------------------------------
+      // =================================================
       // 1. Create Better Auth Account
-      // ----------------------------------------
-      //
-      // IMPORTANT:
-      // Only Better Auth supported fields are
-      // passed here.
-      //
-      // Do NOT pass:
-      // phone
-      // address
-      // role
-      // photoURL
-      //
-      // image is the supported profile image field.
-      // ----------------------------------------
+      // =================================================
 
-      const { error } =
+      const { data, error } =
         await signUp.email({
           name: cleanName,
           email: cleanEmail,
-          password: formData.password,
+          password:
+            formData.password,
         });
 
       if (error) {
@@ -208,31 +158,31 @@ export default function RegisterPage() {
         return;
       }
 
-      // ----------------------------------------
-      // 2. Sync Custom User Data + Role
-      // With Express + MongoDB
-      // ----------------------------------------
+      if (!data?.user) {
+        toast.error(
+          "Account creation failed."
+        );
 
-      await syncUserWithBackend({
-        name: cleanName,
-        email: cleanEmail,
-        image: "",
-        phone: "",
-        address: "",
-        role: selectedRole,
-      });
+        return;
+      }
 
-      // ----------------------------------------
-      // Success
-      // ----------------------------------------
+      // =================================================
+      // 3. Success
+      // =================================================
 
-      toast.success(
-        `Account created as ${selectedRole}.`
+      toast.success("Account created successfully.");
+
+      router.push(
+        "/dashboard"
       );
 
-      router.push("/dashboard");
       router.refresh();
     } catch (error: unknown) {
+      console.error(
+        "Registration error:",
+        error
+      );
+
       const message =
         error instanceof Error
           ? error.message
@@ -244,25 +194,31 @@ export default function RegisterPage() {
     }
   };
 
-  // ----------------------------------------
+  // =====================================================
   // Google / GitHub Registration
-  // ----------------------------------------
+  // =====================================================
 
   const handleSocialAuth = async (
-    provider: "google" | "github"
+    provider:
+      | "google"
+      | "github"
   ) => {
     setLoading(true);
 
     try {
-      const { error } = await signIn.social({
-        provider,
-        callbackURL: "/dashboard",
-      });
+      const { error } =
+        await signIn.social({
+          provider,
+          callbackURL:
+            "/dashboard",
+        });
 
       if (error) {
         toast.error(
-          error.message || `Failed to sign up with ${provider}.`
+          error.message ||
+            `Failed to sign up with ${provider}.`
         );
+
         setLoading(false);
       }
     } catch (error) {
@@ -281,6 +237,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen w-full bg-[#f4f5f7] p-3 transition-colors duration-200 dark:bg-slate-950 sm:p-6 lg:p-8">
+
       <div className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl grid-cols-1 overflow-hidden rounded-3xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 lg:grid-cols-12">
 
         {/* =====================================================
@@ -290,6 +247,7 @@ export default function RegisterPage() {
         <div className="flex flex-col justify-between p-6 sm:p-10 lg:col-span-6 xl:px-14 xl:py-10">
 
           {/* Logo */}
+
           <div>
             <Link
               href="/"
@@ -307,9 +265,11 @@ export default function RegisterPage() {
           </div>
 
           {/* Form Container */}
+
           <div className="mx-auto my-6 w-full max-w-md">
 
             {/* Heading */}
+
             <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-[32px]">
               Create Account
             </h1>
@@ -335,6 +295,7 @@ export default function RegisterPage() {
                 <div className="grid grid-cols-2 gap-2.5">
 
                   {/* Customer */}
+
                   <button
                     type="button"
                     disabled={loading}
@@ -358,6 +319,7 @@ export default function RegisterPage() {
                   </button>
 
                   {/* Owner */}
+
                   <button
                     type="button"
                     disabled={loading}
@@ -396,8 +358,12 @@ export default function RegisterPage() {
                   type="text"
                   name="name"
                   required
-                  value={formData.name}
-                  onChange={handleChange}
+                  value={
+                    formData.name
+                  }
+                  onChange={
+                    handleChange
+                  }
                   placeholder="Rumi Parvez"
                   className="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#6e13f9] focus:ring-2 focus:ring-[#6e13f9]/15 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-[#8b45ff]"
                 />
@@ -416,8 +382,12 @@ export default function RegisterPage() {
                   type="email"
                   name="email"
                   required
-                  value={formData.email}
-                  onChange={handleChange}
+                  value={
+                    formData.email
+                  }
+                  onChange={
+                    handleChange
+                  }
                   placeholder="rumi@example.com"
                   className="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#6e13f9] focus:ring-2 focus:ring-[#6e13f9]/15 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-[#8b45ff]"
                 />
@@ -507,6 +477,7 @@ export default function RegisterPage() {
             ================================================== */}
 
             <div className="my-5 flex items-center gap-3">
+
               <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
 
               <span className="text-xs text-slate-400">
@@ -514,6 +485,7 @@ export default function RegisterPage() {
               </span>
 
               <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+
             </div>
 
             {/* =================================================
@@ -523,6 +495,7 @@ export default function RegisterPage() {
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
 
               {/* Google */}
+
               <button
                 type="button"
                 disabled={loading}
@@ -531,7 +504,7 @@ export default function RegisterPage() {
                     "google"
                   )
                 }
-                className="flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700/70 cursor-pointer"
+                className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700/70"
               >
                 <FcGoogle className="h-4 w-4 shrink-0" />
 
@@ -541,6 +514,7 @@ export default function RegisterPage() {
               </button>
 
               {/* GitHub */}
+
               <button
                 type="button"
                 disabled={loading}
@@ -549,7 +523,7 @@ export default function RegisterPage() {
                     "github"
                   )
                 }
-                className="flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700/70 cursor-pointer"
+                className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700/70"
               >
                 <FaGithub className="h-4 w-4 shrink-0 text-slate-900 dark:text-white" />
 
@@ -561,6 +535,7 @@ export default function RegisterPage() {
             </div>
 
             {/* Login Link */}
+
             <p className="mt-6 text-center text-xs text-slate-500 dark:text-slate-400">
               Already have an account?{" "}
 
@@ -575,6 +550,7 @@ export default function RegisterPage() {
           </div>
 
           {/* Footer */}
+
           <div className="flex flex-wrap items-center justify-between gap-2 pt-2 text-[11px] text-slate-400">
 
             <span>
@@ -600,7 +576,8 @@ export default function RegisterPage() {
 
           <div className="relative flex h-full min-h-[360px] w-full flex-col justify-between overflow-hidden rounded-2xl bg-[#6e13f9] p-6 text-white sm:p-8 lg:p-10">
 
-            {/* Relevant Equipment Image */}
+            {/* Equipment Image */}
+
             <Image
               src={CRANE_IMAGE_URL}
               alt="Heavy construction equipment rental"
@@ -611,9 +588,11 @@ export default function RegisterPage() {
             />
 
             {/* Overlay */}
+
             <div className="absolute inset-0 bg-gradient-to-t from-[#380794]/95 via-[#6e13f9]/70 to-[#6e13f9]/55" />
 
             {/* Main Content */}
+
             <div className="relative z-10 max-w-md">
 
               <span className="inline-block rounded-full bg-white/15 px-3 py-1 text-xs font-medium text-white backdrop-blur-xs">
@@ -633,6 +612,7 @@ export default function RegisterPage() {
             </div>
 
             {/* Bottom Info */}
+
             <div className="relative z-10 mt-8 rounded-xl border border-white/20 bg-black/25 p-4 backdrop-blur-md">
 
               <p className="text-xs font-semibold uppercase tracking-wider text-purple-200">
