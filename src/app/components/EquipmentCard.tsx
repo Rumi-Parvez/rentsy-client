@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, MapPin } from "lucide-react";
+import { ArrowRight, MapPin, Package } from "lucide-react";
 
+import Image from "@/components/ImageWithFallback";
 import { authClient } from "@/lib/auth-client";
 
 export type EquipmentCardMongoId =
@@ -42,7 +42,7 @@ export type EquipmentCardProps = {
 };
 
 const FALLBACK_EQUIPMENT_IMAGE =
-  "https://images.unsplash.com/photo-1503708928676-1cb796a0891e?auto=format&fit=crop&w=900&q=80";
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQOZTnzWW2GlW72hc5WWfDnz-EsbSLeOvrgFhVvr5ogA&s=10";
 
 function resolveEquipmentId(id?: EquipmentCardMongoId): string {
   if (!id) return "";
@@ -127,6 +127,7 @@ export default function EquipmentCard({
               fill
               priority={priority}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              fallbackIcon={Package}
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
 

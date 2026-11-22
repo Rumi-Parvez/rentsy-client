@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
@@ -20,6 +19,7 @@ import {
   ShieldCheck,
   User,
 } from "lucide-react";
+import Image from "@/components/ImageWithFallback";
 
 import { authClient } from "@/lib/auth-client";
 import { API_URL, getAccessToken } from "@/lib/api";
@@ -405,6 +405,7 @@ export default function CheckoutClient() {
                   alt={equipment.equipmentName || "Rental equipment"}
                   fill
                   sizes="(max-width: 1024px) 100vw, 60vw"
+                  fallbackIcon={Package}
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/10 to-transparent" />

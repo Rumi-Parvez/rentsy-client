@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
+import Image from "@/components/ImageWithFallback";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -14,6 +14,7 @@ import {
   Heart,
   Mail,
   MapPin,
+  Package,
   Phone,
   ShieldCheck,
   User,
@@ -513,6 +514,7 @@ export default function EquipmentDetailPage() {
                   alt={item.equipmentName}
                   fill
                   sizes="(max-width: 1024px) 100vw, 60vw"
+                  fallbackIcon={Package}
                   className="object-cover"
                 />
                 <div className="absolute left-4 top-4 flex flex-wrap items-center gap-2">

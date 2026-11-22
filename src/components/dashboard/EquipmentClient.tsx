@@ -15,6 +15,7 @@ import {
 import toast from "react-hot-toast";
 
 import { Button, ButtonLink } from "@/components/dashboard/Button";
+import ImageWithFallback from "@/components/ImageWithFallback";
 import {
   EmptyState,
   Skeleton,
@@ -370,10 +371,12 @@ export default function EquipmentClient({
                 <div className="flex min-w-0 items-start gap-2.5">
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-primary/10 text-primary">
                     {item.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <ImageWithFallback
                         src={item.imageUrl}
                         alt={item.equipmentName}
+                        width={40}
+                        height={40}
+                        fallbackIcon={Package}
                         className="h-full w-full object-cover"
                       />
                     ) : (
@@ -486,10 +489,12 @@ export default function EquipmentClient({
                       <div className="flex items-center gap-2.5">
                         <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-primary/10 text-primary">
                           {item.imageUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
+                            <ImageWithFallback
                               src={item.imageUrl}
                               alt={item.equipmentName}
+                              width={40}
+                              height={40}
+                              fallbackIcon={Package}
                               className="h-full w-full object-cover"
                             />
                           ) : (
@@ -682,10 +687,12 @@ function EquipmentDetails({ equipment }: { equipment: Equipment }) {
     <div className="space-y-4">
       {equipment.imageUrl && (
         <div className="h-52 overflow-hidden rounded-xl border border-border bg-muted/30">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <ImageWithFallback
             src={equipment.imageUrl}
             alt={equipment.equipmentName}
+            width={1000}
+            height={500}
+            fallbackIcon={Package}
             className="h-full w-full object-cover"
           />
         </div>

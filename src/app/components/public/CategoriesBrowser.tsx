@@ -1,9 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, RefreshCw, Search, SlidersHorizontal } from "lucide-react";
+import {
+  ArrowRight,
+  RefreshCw,
+  Search,
+  SlidersHorizontal,
+  Tag,
+} from "lucide-react";
+import Image from "@/components/ImageWithFallback";
 
 import { SERVER_URL } from "@/lib/api";
 import {
@@ -135,6 +141,7 @@ export default function CategoriesBrowser() {
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  fallbackIcon={Tag}
                 />
                 <span className="absolute left-3 top-3 rounded-full bg-slate-950/75 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white backdrop-blur-sm">
                   {category.equipmentCount} listings

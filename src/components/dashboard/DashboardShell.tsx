@@ -39,7 +39,7 @@ import {
 import { roleLabel } from "@/lib/format";
 import type { DashboardUser } from "@/types/dashboard";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
+import Image from "@/components/ImageWithFallback";
 
 
 const SIDEBAR_KEY = "rentsy-dashboard-sidebar-collapsed";

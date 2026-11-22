@@ -27,6 +27,7 @@ import toast from "react-hot-toast";
 
 import { Avatar } from "@/components/dashboard/Avatar";
 import { Button } from "@/components/dashboard/Button";
+import ImageWithFallback from "@/components/ImageWithFallback";
 import {
   MonthlyBarChart,
   RoleDonut,
@@ -927,10 +928,12 @@ function EquipmentMiniCard({
     <div className="overflow-hidden rounded-xl border border-border/70 bg-background/40">
       <div className="flex h-24 items-center justify-center bg-gradient-to-br from-primary/10 via-primary/5 to-transparent">
         {equipment.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <ImageWithFallback
             src={equipment.imageUrl}
             alt={equipment.equipmentName}
+            width={500}
+            height={300}
+            fallbackIcon={Package}
             className="h-full w-full object-cover"
           />
         ) : (

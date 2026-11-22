@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Package } from "lucide-react";
+import Image from "@/components/ImageWithFallback";
 
 type HeroCardItem = {
   id: string;
@@ -195,6 +195,7 @@ export default function HeroSection() {
                     alt={`${card.label} rental equipment`}
                     fill
                     sizes="128px"
+                    fallbackIcon={Package}
                     className="object-cover transition-transform duration-500 group-hover:scale-110"
                   />
 
@@ -270,6 +271,7 @@ export default function HeroSection() {
                       alt={`${card.label} rental equipment`}
                       fill
                       sizes="140px"
+                      fallbackIcon={Package}
                       className="object-cover transition-transform duration-700 group-hover:scale-110"
                     />
 

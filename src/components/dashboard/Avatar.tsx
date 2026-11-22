@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { UserRound } from "lucide-react";
 
 import { initials } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -44,7 +45,11 @@ export function Avatar({
           onError={() => setBroken(true)}
         />
       ) : (
-        <span>{initials(name)}</span>
+        broken && src ? (
+          <UserRound className="h-1/2 w-1/2" aria-hidden="true" />
+        ) : (
+          <span>{initials(name)}</span>
+        )
       )}
     </span>
   );

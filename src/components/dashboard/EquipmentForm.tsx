@@ -5,6 +5,7 @@ import { ImageIcon, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 import { Button } from "@/components/dashboard/Button";
+import ImageWithFallback from "@/components/ImageWithFallback";
 import { SERVER_URL } from "@/lib/api";
 import {
   fetchEquipmentCategories,
@@ -345,14 +346,13 @@ export function EquipmentForm({
         {values.imageUrl && (
           <div className="sm:col-span-2">
             <div className="flex h-36 items-center justify-center overflow-hidden rounded-xl border border-border bg-muted/40">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <ImageWithFallback
                 src={values.imageUrl}
                 alt="Equipment preview"
+                width={800}
+                height={400}
+                fallbackIcon={ImageIcon}
                 className="h-full w-full object-cover"
-                onError={(event) => {
-                  event.currentTarget.style.display = "none";
-                }}
               />
             </div>
           </div>

@@ -11,6 +11,7 @@ import {
 import toast from "react-hot-toast";
 
 import { Button } from "@/components/dashboard/Button";
+import ImageWithFallback from "@/components/ImageWithFallback";
 import { EmptyState, Skeleton } from "@/components/dashboard/EmptyState";
 import { SearchInput } from "@/components/dashboard/Filters";
 import { ConfirmDialog, Modal } from "@/components/dashboard/Modal";
@@ -152,10 +153,12 @@ export default function FavoritesClient() {
               >
                 <div className="relative h-40 w-full overflow-hidden bg-gradient-to-br from-primary/10 via-primary/5 to-transparent">
                   {equipment.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <ImageWithFallback
                       src={equipment.imageUrl}
                       alt={equipment.equipmentName}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                      fallbackIcon={Package}
                       className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
                     />
                   ) : (
@@ -254,10 +257,12 @@ export default function FavoritesClient() {
           <div className="space-y-4">
             {selected.equipment.imageUrl && (
               <div className="h-52 overflow-hidden rounded-xl border border-border bg-muted/30">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <ImageWithFallback
                   src={selected.equipment.imageUrl}
                   alt={selected.equipment.equipmentName}
+                  width={1000}
+                  height={500}
+                  fallbackIcon={Package}
                   className="h-full w-full object-cover"
                 />
               </div>

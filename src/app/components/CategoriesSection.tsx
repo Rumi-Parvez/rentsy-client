@@ -4,19 +4,23 @@
 import React, {
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from "react";
 
-import Image from "next/image";
 import Link from "next/link";
 
 import {
   ArrowRight,
+  ChevronLeft,
+  ChevronRight,
   RefreshCw,
   Search,
+  Tag,
 } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 
+import ImageWithFallback from "@/components/ImageWithFallback";
 import {
   DEFAULT_EQUIPMENT_CATEGORIES,
   fetchEquipmentCategories,
@@ -37,6 +41,25 @@ export default function CategoriesSection() {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const categoriesRef = useRef<HTMLDivElement>(null);
+  const [scrollState, setScrollState] = useState({
+    hasOverflow: false,
+    canScrollLeft: false,
+    canScrollRight: false,
+  });
+
+  const updateScrollState = useCallback(() => {
+    const element = categoriesRef.current;
+
+    if (!element) return;
+
+    const maxScroll = element.scrollWidth - element.clientWidth;
+    setScrollState({
+      hasOverflow: maxScroll > 1,
+      canScrollLeft: element.scrollLeft > 1,
+      canScrollRight: element.scrollLeft < maxScroll - 1,
+    });
+  }, []);
 
   // ==========================================
   // Load Categories
@@ -88,12 +111,37 @@ export default function CategoriesSection() {
     };
   }, [loadCategories, searchQuery]);
 
+  useEffect(() => {
+    const element = categoriesRef.current;
+    if (!element) return;
+
+    updateScrollState();
+    const resizeObserver = new ResizeObserver(updateScrollState);
+    resizeObserver.observe(element);
+    window.addEventListener("resize", updateScrollState);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateScrollState);
+    };
+  }, [categories, updateScrollState]);
+
   // ==========================================
   // Retry
   // ==========================================
 
   const handleRetry = () => {
     void loadCategories(searchQuery);
+  };
+
+  const scrollCategories = (direction: -1 | 1) => {
+    const element = categoriesRef.current;
+    if (!element) return;
+
+    element.scrollBy({
+      left: direction * element.clientWidth * 0.75,
+      behavior: "smooth",
+    });
   };
 
   return (
@@ -153,12 +201,12 @@ export default function CategoriesSection() {
         {/* Loading State */}
 
         {loading && (
-          <div className="mt-8 flex items-start gap-6 overflow-hidden pb-4 pt-1 lg:grid lg:grid-cols-6 lg:gap-5">
+          <div className="mt-8 flex items-start gap-4 overflow-x-auto pb-4 pt-1 scrollbar-none sm:gap-5">
             {Array.from({ length: 6 }).map(
               (_, index) => (
                 <div
                   key={index}
-                  className="flex w-32 shrink-0 animate-pulse flex-col items-center lg:w-auto"
+                  className="flex w-40 shrink-0 animate-pulse flex-col items-center sm:w-44 lg:w-[180px]"
                 >
                   <div className="h-24 w-24 rounded-full bg-slate-200 dark:bg-slate-800 sm:h-28 sm:w-28" />
 
@@ -202,72 +250,99 @@ export default function CategoriesSection() {
         {/* Horizontal Circular Category Strip */}
 
         {!loading && categories.length > 0 && (
-          <motion.div
-            className="mt-8 flex items-start gap-6 overflow-x-auto pb-4 pt-1 lg:grid lg:grid-cols-6 lg:gap-5 lg:overflow-visible lg:pb-0"
-            initial={reduceMotion ? undefined : "hidden"}
-            whileInView={reduceMotion ? undefined : "show"}
-            viewport={{ once: true, amount: 0.2 }}
-            variants={{
-              hidden: {},
-              show: { transition: { staggerChildren: 0.07 } },
-            }}
-          >
-            {categories.map((cat) => (
-              <motion.div
-                key={cat.slug || cat.name}
-                className="shrink-0 lg:w-auto"
-                variants={{
-                  hidden: {
-                    opacity: 0,
-                    y: 24,
-                    scale: 0.92,
-                    filter: "blur(8px)",
-                  },
-                  show: {
-                    opacity: 1,
-                    y: 0,
-                    scale: 1,
-                    filter: "blur(0px)",
-                    transition: {
-                      duration: 0.5,
-                      ease: [0.22, 1, 0.36, 1],
-                    },
-                  },
-                }}
-              >
-                <Link
-                  href={`/equipment?category=${encodeURIComponent(
-                    cat.name
-                  )}`}
-                  className="group flex w-32 flex-col items-center text-center lg:w-auto"
+          <div className="mt-8 min-w-0">
+            {scrollState.hasOverflow && (
+              <div className="mb-2 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => scrollCategories(-1)}
+                  disabled={!scrollState.canScrollLeft}
+                  aria-label="Scroll categories left"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:border-[#6e13f9] hover:text-[#6e13f9] disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#a66cff] dark:hover:text-[#a66cff]"
                 >
-                  <div className="relative h-24 w-24 rounded-full border-2 border-slate-200 bg-slate-100 p-1 shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:border-[#6e13f9] group-hover:shadow-[0_12px_24px_-8px_rgba(110,19,249,0.4)] dark:border-slate-800 dark:bg-slate-900 sm:h-28 sm:w-28">
-                    <div className="relative h-full w-full overflow-hidden rounded-full">
-                      <Image
-                        src={cat.imageUrl}
-                        alt={cat.name}
-                        width={500}
-                        height={500}
-                        className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
-                      />
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => scrollCategories(1)}
+                  disabled={!scrollState.canScrollRight}
+                  aria-label="Scroll categories right"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:border-[#6e13f9] hover:text-[#6e13f9] disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-[#a66cff] dark:hover:text-[#a66cff]"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+            <motion.div
+              ref={categoriesRef}
+              onScroll={updateScrollState}
+              className="flex items-start gap-4 overflow-x-auto pb-4 pt-1 scrollbar-none sm:gap-5"
+              initial={reduceMotion ? undefined : "hidden"}
+              whileInView={reduceMotion ? undefined : "show"}
+              viewport={{ once: true, amount: 0.2 }}
+              variants={{
+                hidden: {},
+                show: { transition: { staggerChildren: 0.07 } },
+              }}
+            >
+              {categories.map((cat) => (
+                <motion.div
+                  key={cat.slug || cat.name}
+                  className="w-40 shrink-0 sm:w-44 lg:w-[180px]"
+                  variants={{
+                    hidden: {
+                      opacity: 0,
+                      y: 24,
+                      scale: 0.92,
+                      filter: "blur(8px)",
+                    },
+                    show: {
+                      opacity: 1,
+                      y: 0,
+                      scale: 1,
+                      filter: "blur(0px)",
+                      transition: {
+                        duration: 0.5,
+                        ease: [0.22, 1, 0.36, 1],
+                      },
+                    },
+                  }}
+                >
+                  <Link
+                    href={`/equipment?category=${encodeURIComponent(
+                      cat.name
+                    )}`}
+                    className="group flex w-full flex-col items-center text-center"
+                  >
+                    <div className="relative h-24 w-24 rounded-full border-2 border-slate-200 bg-slate-100 p-1 shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:border-[#6e13f9] group-hover:shadow-[0_12px_24px_-8px_rgba(110,19,249,0.4)] dark:border-slate-800 dark:bg-slate-900 sm:h-28 sm:w-28">
+                      <div className="relative h-full w-full overflow-hidden rounded-full">
+                        <ImageWithFallback
+                          src={cat.imageUrl}
+                          alt={cat.name}
+                          width={500}
+                          height={500}
+                          fallbackIcon={Tag}
+                          className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
+                        />
+                      </div>
+
+                      <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#6e13f9] px-2.5 py-0.5 text-[10px] font-bold text-white shadow">
+                        {cat.equipmentCount}
+                      </span>
                     </div>
 
-                    <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#6e13f9] px-2.5 py-0.5 text-[10px] font-bold text-white shadow">
-                      {cat.equipmentCount}
-                    </span>
-                  </div>
+                    <h3 className="mt-3.5 line-clamp-2 text-xs font-extrabold leading-snug text-slate-900 transition-colors group-hover:text-[#6e13f9] dark:text-white dark:group-hover:text-[#a66cff] sm:text-sm">
+                      {cat.name}
+                    </h3>
 
-                  <h3 className="mt-3.5 line-clamp-2 text-xs font-extrabold leading-snug text-slate-900 transition-colors group-hover:text-[#6e13f9] dark:text-white dark:group-hover:text-[#a66cff] sm:text-sm">
-                    {cat.name}
-                  </h3>
-
-                  <p className="mt-1 line-clamp-2 text-[11px] leading-4 text-slate-500 dark:text-slate-400">
-                    {cat.description}
-                  </p>
-                </Link>
-              </motion.div>
-            ))}
-          </motion.div>
+                    <p className="mt-1 line-clamp-2 text-[11px] leading-4 text-slate-500 dark:text-slate-400">
+                      {cat.description}
+                    </p>
+                  </Link>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
         )}
       </div>
     </section>
