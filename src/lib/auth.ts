@@ -15,7 +15,10 @@ const client = new MongoClient(mongoUri, {
 
 export const db = client.db("rEntsy_server_DB");
 
-const baseURL = process.env.BETTER_AUTH_URL || "http://localhost:3000";
+const baseURL =
+  process.env.BETTER_AUTH_URL ||
+  process.env.NEXT_PUBLIC_BETTER_AUTH_URL ||
+  "http://localhost:3000";
 
 const socialProviders = {
   ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
