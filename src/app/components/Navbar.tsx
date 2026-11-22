@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "@/components/ImageWithFallback";
 import Link from "next/link";
+
+import Image from "@/components/ImageWithFallback";
 
 import {
   HiBars3,

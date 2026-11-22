@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Package } from "lucide-react";
+
 import Image from "@/components/ImageWithFallback";
 
 type HeroCardItem = {
@@ -18,8 +19,8 @@ type HeroCardItem = {
 const HERO_CARDS: HeroCardItem[] = [
   {
     id: "excavator",
-    label: "Excavator",
-    category: "Earthmoving",
+    label: "",
+    category: "",
     imageUrl:
       "https://d2uhsaoc6ysewq.cloudfront.net/28475/Excavators-John-Deere-160G-LC-24984571.jpg",
     desktopClass:
@@ -28,8 +29,8 @@ const HERO_CARDS: HeroCardItem[] = [
   },
   {
     id: "forklift",
-    label: "Forklift",
-    category: "Material Handling",
+    label: "",
+    category: "",
     imageUrl:
       "https://www.bestforkliftrentals.com/images/hero-forklift.jpg",
     desktopClass:
@@ -38,8 +39,8 @@ const HERO_CARDS: HeroCardItem[] = [
   },
   {
     id: "crane",
-    label: "Truck Crane",
-    category: "Heavy Lifting",
+    label: "",
+    category: "",
     imageUrl:
       "https://media.base44.com/images/public/6954ca678e2c3f407fbdd60d/19da4f0fe_ChatGPTImageJan25202607_50_50AM.jpg",
     desktopClass:
@@ -48,8 +49,8 @@ const HERO_CARDS: HeroCardItem[] = [
   },
   {
     id: "concrete-mixer",
-    label: "Concrete Mixer",
-    category: "Construction",
+    label: "",
+    category: "",
     imageUrl:
       "https://cdn.shopify.com/s/files/1/2528/3396/products/Belle-premier-xt-cement-mixer_580x%402x.png?v=1518474057",
     desktopClass:
@@ -58,8 +59,8 @@ const HERO_CARDS: HeroCardItem[] = [
   },
   {
     id: "boom-lift",
-    label: "Boom Lift",
-    category: "Access Equipment",
+    label: "",
+    category: "",
     imageUrl:
       "https://blog.iseekplant.com.au/hs-fs/hubfs/Imported_Blog_Media/telescopic%20boom%20lift.jpg",
     desktopClass:
@@ -68,8 +69,8 @@ const HERO_CARDS: HeroCardItem[] = [
   },
   {
     id: "generator",
-    label: "Generator",
-    category: "Power Equipment",
+    label: "",
+    category: "",
     imageUrl:
       "https://sgh.com.au/cdn/shop/files/construction-site-at-sunset-with-generator.jpg?v=1781101193&width=3200",
     desktopClass:
@@ -78,8 +79,8 @@ const HERO_CARDS: HeroCardItem[] = [
   },
   {
     id: "scaffolding",
-    label: "Scaffolding",
-    category: "Site Equipment",
+    label: "",
+    category: "",
     imageUrl:
       "https://rafeglobal.com/images/scaffolding_plural.png",
     desktopClass:
@@ -88,8 +89,8 @@ const HERO_CARDS: HeroCardItem[] = [
   },
   {
     id: "pressure-washer",
-    label: "Pressure Washer",
-    category: "Cleaning Equipment",
+    label: "",
+    category: "",
     imageUrl:
       "https://quipli-service-prod-public.s3.amazonaws.com/rentwithmack/products/891/images/7512f356-6894-4c51-991d-c33d4140755d/ORIGINAL",
     desktopClass:
@@ -131,7 +132,7 @@ export default function HeroSection() {
         };
 
   return (
-    <section className="relative w-full overflow-hidden bg-white px-4 py-12 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-white sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+    <section id="home" className="relative w-full overflow-hidden bg-white px-4 py-12 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-white sm:px-6 sm:py-16 lg:px-8 lg:py-20">
       {/* Ambient blur accents */}
       <div className="pointer-events-none absolute inset-0 -z-0 overflow-hidden">
         <motion.div

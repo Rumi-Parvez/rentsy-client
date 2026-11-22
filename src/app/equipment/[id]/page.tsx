@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import Image from "@/components/ImageWithFallback";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+
+import Image from "@/components/ImageWithFallback";
 
 import {
   ArrowLeft,
@@ -521,11 +522,7 @@ export default function EquipmentDetailPage() {
                   <span className="rounded-full bg-[#6e13f9] px-3 py-1 text-xs font-bold text-white">
                     {item.category}
                   </span>
-                  {item.status && (
-                    <span className="rounded-full bg-slate-950/75 px-3 py-1 text-xs font-semibold capitalize text-white backdrop-blur-sm">
-                      {item.status}
-                    </span>
-                  )}
+                  
                 </div>
               </div>
 
