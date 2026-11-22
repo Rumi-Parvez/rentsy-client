@@ -262,11 +262,11 @@ export default function CategoriesClient({
             {filtered.map((category) => (
               <article
                 key={category._id || category.slug || category.name}
-                className="flex flex-col justify-between rounded-2xl border border-border/70 bg-background/60 p-4 transition hover:border-primary/30"
+                className="flex min-w-0 flex-col justify-between rounded-2xl border border-border/70 bg-background/60 p-4 transition hover:border-primary/30"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex min-w-0 items-center gap-2.5">
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                         <Tag className="h-4 w-4" />
                       </span>

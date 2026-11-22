@@ -360,7 +360,101 @@ export default function EquipmentClient({
             />
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+          <div className="space-y-2 p-3 xl:hidden">
+            {filtered.map((item) => (
+              <article
+                key={item._id}
+                className="min-w-0 rounded-xl border border-border/70 bg-background/50 p-3"
+              >
+                <div className="flex min-w-0 items-start gap-2.5">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-primary/10 text-primary">
+                    {item.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={item.imageUrl}
+                        alt={item.equipmentName}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <Package className="h-4 w-4" />
+                    )}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="break-words text-xs font-semibold text-foreground">
+                      {item.equipmentName}
+                    </p>
+                    <p className="mt-0.5 break-words text-[10px] text-muted-foreground">
+                      {item.brand || "No brand"} · {item.location || "No location"}
+                    </p>
+                  </div>
+                  <StatusBadge status={item.status} />
+                </div>
+
+                <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 border-t border-border/60 pt-2.5 text-[10px]">
+                  <div className="min-w-0">
+                    <dt className="text-muted-foreground">Category</dt>
+                    <dd className="break-words font-medium text-foreground">{item.category}</dd>
+                  </div>
+                  {user.role === "admin" && (
+                    <div className="min-w-0">
+                      <dt className="text-muted-foreground">Owner</dt>
+                      <dd className="break-words font-medium text-foreground">{item.ownerName || "—"}</dd>
+                    </div>
+                  )}
+                  <div>
+                    <dt className="text-muted-foreground">Price</dt>
+                    <dd className="font-semibold text-foreground">
+                      {formatCurrency(item.rentalPrice)}/{item.rentalType}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted-foreground">Quantity</dt>
+                    <dd className="font-medium text-foreground">{formatNumber(item.availableQuantity)}</dd>
+                  </div>
+                </dl>
+
+                <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-border/60 pt-2.5">
+                  <Button variant="secondary" size="sm" onClick={() => setSelected(item)}>
+                    <Eye className="h-3 w-3" />
+                    View
+                  </Button>
+                  {user.role === "admin" && item.status !== "approved" && (
+                    <Button size="sm" disabled={busyId === item._id} onClick={() => updateStatus(item, "approved")}>
+                      <Check className="h-3 w-3" />
+                      Approve
+                    </Button>
+                  )}
+                  {user.role === "admin" && item.status !== "rejected" && (
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="text-rose-600 dark:text-rose-400"
+                      disabled={busyId === item._id}
+                      onClick={() => updateStatus(item, "rejected")}
+                    >
+                      <X className="h-3 w-3" />
+                      Reject
+                    </Button>
+                  )}
+                  <Button variant="secondary" size="icon" className="h-8 w-8" onClick={() => setEditing(item)} aria-label="Edit equipment">
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-rose-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10"
+                    onClick={() => setDeleting(item)}
+                    aria-label="Delete equipment"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className="hidden overflow-x-auto xl:block">
             <table className="w-full min-w-[820px] border-collapse text-left text-xs">
               <thead>
                 <tr className="border-b border-border/60 bg-muted/30 text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
@@ -506,6 +600,7 @@ export default function EquipmentClient({
               </tbody>
             </table>
           </div>
+          </>
         )}
       </div>
 

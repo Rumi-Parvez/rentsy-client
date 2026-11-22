@@ -174,8 +174,8 @@ export default function ProfileClient({
         }
       />
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.6fr)_minmax(300px,1fr)]">
-        <div className="space-y-5">
+      <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1.6fr)_minmax(300px,1fr)]">
+        <div className="min-w-0 space-y-5">
           <SectionCard
             title="Personal information"
             subtitle="This information is visible on your rental activity."
@@ -411,7 +411,7 @@ export default function ProfileClient({
           </SectionCard>
         </div>
 
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5">
           <SectionCard title="Profile preview">
             <div className="flex flex-col items-center text-center">
               <Avatar

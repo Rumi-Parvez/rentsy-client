@@ -294,7 +294,82 @@ export default function UsersClient({
             />
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+          <div className="space-y-2 p-3 xl:hidden">
+            {filtered.map((user) => {
+              const isSelf = user._id === currentUser._id;
+
+              return (
+                <article
+                  key={user._id}
+                  className="min-w-0 rounded-xl border border-border/70 bg-background/50 p-3"
+                >
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <Avatar
+                      name={user.name}
+                      src={user.image}
+                      size="md"
+                      className="h-9 w-9 shrink-0 ring-0"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="flex min-w-0 items-center gap-1.5 text-xs font-semibold text-foreground">
+                        <span className="truncate">{user.name}</span>
+                        {isSelf && (
+                          <span className="shrink-0 rounded-full bg-primary/10 px-1.5 py-0.5 text-[9px] font-bold text-primary">
+                            You
+                          </span>
+                        )}
+                      </p>
+                      <p className="break-all text-[10px] text-muted-foreground">{user.email}</p>
+                    </div>
+                    <RoleBadge role={user.role} />
+                  </div>
+
+                  <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-2.5 text-[10px]">
+                    <div className="min-w-0">
+                      <p className="text-muted-foreground">Phone</p>
+                      <p className="break-words font-medium text-foreground">{user.phone || "—"}</p>
+                    </div>
+                    <div className="text-muted-foreground">
+                      Joined {formatDate(user.createdAt)}
+                    </div>
+                  </div>
+
+                  <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                    <select
+                      value={user.role}
+                      disabled={isSelf || busyId === user._id}
+                      onChange={(event) => changeRole(user, event.target.value)}
+                      aria-label={`Change role for ${user.name}`}
+                      className="h-8 max-w-full rounded-lg border border-border bg-card px-2 text-[10px] font-medium outline-none focus:border-primary/50 disabled:opacity-50"
+                    >
+                      {ROLE_OPTIONS.map((roleOption) => (
+                        <option key={roleOption} value={roleOption}>
+                          {roleLabel(roleOption)}
+                        </option>
+                      ))}
+                    </select>
+                    <Button variant="secondary" size="sm" onClick={() => setSelected(user)}>
+                      <Eye className="h-3 w-3" />
+                      View
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-rose-500 hover:bg-rose-50 hover:text-rose-600 disabled:opacity-40 dark:hover:bg-rose-500/10"
+                      disabled={isSelf}
+                      onClick={() => setDeleting(user)}
+                      aria-label="Delete user"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+
+          <div className="hidden overflow-x-auto xl:block">
             <table className="w-full min-w-[820px] border-collapse text-left text-xs">
               <thead>
                 <tr className="border-b border-border/60 bg-muted/30 text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
@@ -405,6 +480,7 @@ export default function UsersClient({
               </tbody>
             </table>
           </div>
+          </>
         )}
       </div>
 

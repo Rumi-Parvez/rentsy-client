@@ -65,7 +65,7 @@ export default function AddEquipmentClient({
         }
       />
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.7fr)_minmax(300px,1fr)]">
+      <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1.7fr)_minmax(300px,1fr)]">
         <SectionCard
           title="Equipment details"
           subtitle="All fields marked with * are required"

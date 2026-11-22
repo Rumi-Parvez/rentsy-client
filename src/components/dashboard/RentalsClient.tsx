@@ -313,7 +313,135 @@ export default function RentalsClient({
             />
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+          <div className="space-y-2 p-3 xl:hidden">
+            {filtered.map((booking) => (
+              <article
+                key={booking._id}
+                className="min-w-0 rounded-xl border border-border/70 bg-background/50 p-3"
+              >
+                <div className="flex min-w-0 items-start justify-between gap-2">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <CalendarDays className="h-4 w-4" />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="break-words text-xs font-semibold text-foreground">
+                        {booking.equipmentName}
+                      </p>
+                      <p className="break-all text-[10px] text-muted-foreground">
+                        {booking.bookingId}
+                      </p>
+                    </div>
+                  </div>
+                  <StatusBadge status={booking.bookingStatus} />
+                </div>
+
+                <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 border-t border-border/60 pt-2.5 text-[10px]">
+                  {user.role !== "customer" && (
+                    <div className="min-w-0 col-span-2">
+                      <dt className="text-muted-foreground">Customer</dt>
+                      <dd className="break-words font-medium text-foreground">
+                        {booking.customerName}
+                        {booking.customerEmail ? ` · ${booking.customerEmail}` : ""}
+                      </dd>
+                    </div>
+                  )}
+                  {user.role === "admin" && (
+                    <div className="min-w-0">
+                      <dt className="text-muted-foreground">Owner</dt>
+                      <dd className="break-words font-medium text-foreground">{booking.ownerName}</dd>
+                    </div>
+                  )}
+                  <div>
+                    <dt className="text-muted-foreground">Rental period</dt>
+                    <dd className="break-words font-medium text-foreground">
+                      {formatDate(booking.rentalStartDate)} – {formatDate(booking.rentalEndDate)}
+                      <span className="block text-muted-foreground">
+                        {booking.duration} day(s) · qty {booking.requiredQuantity}
+                      </span>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted-foreground">Amount</dt>
+                    <dd className="font-semibold text-foreground">{formatCurrency(booking.totalAmount)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted-foreground">Payment</dt>
+                    <dd className="mt-0.5">
+                      <StatusBadge status={booking.paymentStatus} />
+                    </dd>
+                  </div>
+                </dl>
+
+                <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-border/60 pt-2.5">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setSelected(booking)}
+                    title="View booking details"
+                  >
+                    <Eye className="h-3 w-3" />
+                    View
+                  </Button>
+
+                  {user.role === "owner" && (
+                    <OwnerActions
+                      booking={booking}
+                      busy={busyId === booking._id}
+                      onAction={(nextStatus, label) =>
+                        setPendingAction({ booking, nextStatus, label })
+                      }
+                    />
+                  )}
+
+                  {user.role === "admin" && (
+                    <>
+                      <select
+                        value={booking.bookingStatus}
+                        disabled={busyId === booking._id}
+                        onChange={(event) => runStatusUpdate(booking, event.target.value)}
+                        aria-label="Booking status"
+                        className="h-8 max-w-full rounded-lg border border-border bg-card px-2 text-[10px] font-medium outline-none focus:border-primary/50"
+                      >
+                        {BOOKING_STATUS_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+
+                      <select
+                        value={booking.paymentStatus}
+                        disabled={busyId === booking._id}
+                        onChange={(event) => updatePayment(booking, event.target.value)}
+                        aria-label="Payment status"
+                        className="h-8 max-w-full rounded-lg border border-border bg-card px-2 text-[10px] font-medium outline-none focus:border-primary/50"
+                      >
+                        {PAYMENT_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-rose-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10"
+                        onClick={() => setDeleteTarget(booking)}
+                        aria-label="Delete booking"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className="hidden overflow-x-auto xl:block">
             <table className="w-full min-w-[900px] border-collapse text-left text-xs">
               <thead>
                 <tr className="border-b border-border/60 bg-muted/30 text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
@@ -517,6 +645,7 @@ export default function RentalsClient({
               </tbody>
             </table>
           </div>
+          </>
         )}
       </div>
 

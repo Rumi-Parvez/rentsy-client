@@ -299,8 +299,8 @@ function AdminOverview({ user }: { user: DashboardUser }) {
         />
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)]">
-        <div className="space-y-5">
+      <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)]">
+        <div className="min-w-0 space-y-5">
           <SectionCard
             title="Monthly bookings"
             subtitle="Booking volume over the last 6 months"
@@ -344,7 +344,7 @@ function AdminOverview({ user }: { user: DashboardUser }) {
           </SectionCard>
         </div>
 
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5">
           <SectionCard
             title="User distribution"
             subtitle="Accounts by access level"
@@ -510,8 +510,8 @@ function OwnerOverview({ user }: { user: DashboardUser }) {
         />
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)]">
-        <div className="space-y-5">
+      <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)]">
+        <div className="min-w-0 space-y-5">
           <SectionCard
             title="Monthly earnings"
             subtitle="Paid rental revenue over the last 6 months"
@@ -559,7 +559,7 @@ function OwnerOverview({ user }: { user: DashboardUser }) {
           </SectionCard>
         </div>
 
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5">
           <SectionCard title="Quick actions">
             <div className="space-y-2">
               <QuickLink
@@ -685,8 +685,8 @@ function CustomerOverview({ user }: { user: DashboardUser }) {
         />
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)]">
-        <div className="space-y-5">
+      <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)]">
+        <div className="min-w-0 space-y-5">
           <SectionCard
             title="Rental activity"
             subtitle="Your bookings over the last 6 months"
@@ -748,7 +748,7 @@ function CustomerOverview({ user }: { user: DashboardUser }) {
           </SectionCard>
         </div>
 
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5">
           <ProfileCard user={user} />
 
           <SectionCard title="Quick actions">

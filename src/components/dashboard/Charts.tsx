@@ -42,7 +42,7 @@ export function MonthlyBarChart({
   }));
 
   return (
-    <div style={{ height }} className="w-full">
+    <div style={{ height }} className="w-full min-w-0">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={chartData}
@@ -110,7 +110,7 @@ export function RoleDonut({
   const total = customers + owners + admins;
 
   return (
-    <div className="flex flex-col items-center gap-4 sm:flex-row">
+    <div className="flex min-w-0 flex-col items-center gap-4 sm:flex-row">
       <div className="relative h-[150px] w-[150px] shrink-0">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -155,7 +155,7 @@ export function RoleDonut({
         </div>
       </div>
 
-      <div className="w-full space-y-2.5">
+      <div className="w-full min-w-0 space-y-2.5">
         {data.map((item) => (
           <div
             key={item.name}

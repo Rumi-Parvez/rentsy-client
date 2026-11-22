@@ -8,7 +8,7 @@ export function PageSkeleton({
   rows?: number;
 }) {
   return (
-    <div className="animate-pulse space-y-6">
+    <div className="min-w-0 animate-pulse space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="space-y-2.5">
           <div className="h-3 w-24 rounded-full bg-muted" />
@@ -29,7 +29,7 @@ export function PageSkeleton({
             {Array.from({ length: rows }).map((_, index) => (
               <div
                 key={index}
-                className="grid grid-cols-[1.4fr_1fr_1fr_0.8fr] items-center gap-3 rounded-xl bg-muted/50 p-3.5"
+                className="grid min-w-0 grid-cols-2 items-center gap-3 rounded-xl bg-muted/50 p-3.5 sm:grid-cols-[1.4fr_1fr_1fr_0.8fr]"
               >
                 <div className="h-3.5 w-full rounded-full bg-muted" />
                 <div className="h-3.5 w-4/5 rounded-full bg-muted" />

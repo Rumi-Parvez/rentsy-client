@@ -23,7 +23,7 @@ const marketplaceLinks = [
   { label: "Categories", href: "/categories" },
   { label: "How It Works", href: "/how-it-works" },
   { label: "Rental Process", href: "/rental-process" },
-  { label: "Pricing", href: "/pricing" },
+
 ];
 
 const businessLinks = [

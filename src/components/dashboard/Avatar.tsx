@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 
-import { cn } from "@/lib/utils";
 import { initials } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 const sizeMap = {
   sm: "h-8 w-8 text-[11px]",
@@ -30,7 +30,7 @@ export function Avatar({
   return (
     <span
       className={cn(
-        "relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#6e13f9] to-[#a855f7] font-bold text-white ring-2 ring-background",
+        "relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br  from-[#6e13f9] to-[#a855f7] font-bold text-white ring-2 ring-background",
         sizeMap[size],
         className
       )}

@@ -261,7 +261,7 @@ export default function DashboardShell({
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#f5f5fa] text-foreground transition-colors duration-300 dark:bg-[#08080d]">
+    <div className="min-h-screen w-full overflow-x-clip bg-[#f5f5fa] text-foreground transition-colors duration-300 dark:bg-[#08080d]">
       <div
         className={cn(
           "mx-auto grid min-h-screen w-full max-w-[1800px]",
@@ -534,7 +534,7 @@ export default function DashboardShell({
             )}
           </header>
 
-          <main className="mx-auto w-full max-w-[1440px] flex-1 px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-7">
+          <main className="mx-auto min-w-0 w-full max-w-[1440px] flex-1 px-3 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-7">
             {children}
           </main>
 

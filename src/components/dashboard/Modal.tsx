@@ -67,17 +67,17 @@ export function Modal({
         aria-modal="true"
         aria-label={title}
         className={cn(
-          "relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-3xl border border-border bg-card shadow-2xl sm:rounded-3xl",
+          "relative flex max-h-[92vh] w-full min-w-0 flex-col overflow-hidden rounded-t-3xl border border-border bg-card shadow-2xl sm:rounded-3xl",
           sizeMap[size]
         )}
       >
-        <header className="flex items-start justify-between gap-4 border-b border-border px-5 py-4">
-          <div>
-            <h2 className="text-base font-semibold tracking-tight text-foreground">
+        <header className="flex min-w-0 items-start justify-between gap-4 border-b border-border px-4 py-4 sm:px-5">
+          <div className="min-w-0">
+            <h2 className="break-words text-base font-semibold tracking-tight text-foreground">
               {title}
             </h2>
             {description && (
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 break-words text-xs text-muted-foreground">
                 {description}
               </p>
             )}
@@ -93,7 +93,7 @@ export function Modal({
           </button>
         </header>
 
-        <div className="flex-1 overflow-y-auto px-5 py-5">
+        <div className="min-w-0 flex-1 overflow-y-auto px-4 py-5 sm:px-5">
           {children}
         </div>
 
