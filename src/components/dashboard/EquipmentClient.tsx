@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   Check,
@@ -31,11 +31,14 @@ import { ConfirmDialog, Modal } from "@/components/dashboard/Modal";
 import { PageHeader } from "@/components/dashboard/SectionCard";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
 import { useApi } from "@/hooks/use-api";
-import { apiDelete, apiPatch, getErrorMessage } from "@/lib/api";
 import {
-  CATEGORY_FILTER_OPTIONS,
-  EQUIPMENT_STATUS_OPTIONS,
-} from "@/lib/equipment-options";
+  SERVER_URL,
+  apiDelete,
+  apiPatch,
+  getErrorMessage,
+} from "@/lib/api";
+import { EQUIPMENT_STATUS_OPTIONS } from "@/lib/equipment-options";
+import { fetchEquipmentCategories } from "@/lib/equipmentCategories";
 import {
   formatCurrency,
   formatDate,
@@ -72,8 +75,50 @@ export default function EquipmentClient({
   const [deleting, setDeleting] = useState<Equipment | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [categoryOptions, setCategoryOptions] = useState<string[]>(
+    []
+  );
+
+  useEffect(() => {
+    let active = true;
+
+    fetchEquipmentCategories(SERVER_URL)
+      .then((categories) => {
+        if (!active) return;
+
+        setCategoryOptions(
+          categories
+            .map((category) => category.name.trim())
+            .filter(Boolean)
+        );
+      })
+      .catch(() => {
+        // Filters still work with the categories present in the list.
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const equipment = data?.equipment || [];
+
+  const categoryFilterOptions = useMemo(() => {
+    const names = new Set<string>(categoryOptions);
+
+    equipment.forEach((item) => {
+      if (item.category) {
+        names.add(item.category);
+      }
+    });
+
+    return [
+      { label: "All categories", value: "" },
+      ...Array.from(names)
+        .sort((left, right) => left.localeCompare(right))
+        .map((name) => ({ label: name, value: name })),
+    ];
+  }, [categoryOptions, equipment]);
 
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -247,7 +292,7 @@ export default function EquipmentClient({
             <FilterSelect
               value={category}
               onChange={setCategory}
-              options={CATEGORY_FILTER_OPTIONS}
+              options={categoryFilterOptions}
               ariaLabel="Filter by category"
             />
             <FilterSelect

@@ -437,26 +437,6 @@ export default function RentalsClient({
                           View
                         </Button>
 
-                        {user.role === "customer" &&
-                          ["pending", "confirmed"].includes(
-                            booking.bookingStatus
-                          ) && (
-                            <Button
-                              variant="danger"
-                              size="sm"
-                              disabled={busyId === booking._id}
-                              onClick={() =>
-                                setPendingAction({
-                                  booking,
-                                  nextStatus: "cancelled",
-                                  label: "Cancel rental",
-                                })
-                              }
-                            >
-                              Cancel
-                            </Button>
-                          )}
-
                         {user.role === "owner" && (
                           <OwnerActions
                             booking={booking}

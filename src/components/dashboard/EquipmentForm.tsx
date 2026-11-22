@@ -1,10 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ImageIcon, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 import { Button } from "@/components/dashboard/Button";
+import { SERVER_URL } from "@/lib/api";
+import {
+  fetchEquipmentCategories,
+} from "@/lib/equipmentCategories";
 import {
   CATEGORY_OPTIONS,
   CONDITION_OPTIONS,
@@ -60,6 +64,55 @@ export function EquipmentForm({
     imageUrl: initial?.imageUrl || "",
     rentalTerms: initial?.rentalTerms || "",
   });
+
+  const [categoryOptions, setCategoryOptions] = useState<string[]>(
+    () => {
+      const base = [...CATEGORY_OPTIONS];
+      const current = initial?.category?.trim();
+
+      if (current && !base.includes(current)) {
+        base.unshift(current);
+      }
+
+      return base;
+    }
+  );
+
+  // Only approved categories (plus any legacy category already attached
+  // to this listing) can be selected.
+  useEffect(() => {
+    let active = true;
+
+    fetchEquipmentCategories(SERVER_URL)
+      .then((categories) => {
+        if (!active) return;
+
+        const names = Array.from(
+          new Set(
+            categories
+              .map((category) => category.name.trim())
+              .filter(Boolean)
+          )
+        );
+
+        const current = initial?.category?.trim();
+
+        if (current && !names.includes(current)) {
+          names.unshift(current);
+        }
+
+        if (names.length > 0) {
+          setCategoryOptions(names);
+        }
+      })
+      .catch(() => {
+        // Keep the fallback options if the request fails.
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [initial?.category]);
 
   const update = (
     field: keyof EquipmentPayload,
@@ -139,12 +192,16 @@ export function EquipmentForm({
               update("category", event.target.value)
             }
           >
-            {CATEGORY_OPTIONS.map((category) => (
+            {categoryOptions.map((category) => (
               <option key={category} value={category}>
                 {category}
               </option>
             ))}
           </select>
+          <p className="mt-1.5 text-[10px] leading-4 text-muted-foreground">
+            Only approved categories are listed. Owners can request a new
+            category from the Categories page.
+          </p>
         </div>
 
         <div>

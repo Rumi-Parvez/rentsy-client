@@ -1,10 +1,14 @@
 
 export type EquipmentCategory = {
+  _id?: string | null;
   name: string;
   slug: string;
   description: string;
   imageUrl: string;
   equipmentCount: number;
+  status?: "pending" | "approved" | "rejected";
+  isBuiltIn?: boolean;
+  createdAt?: string | null;
 };
 
 export const DEFAULT_EQUIPMENT_CATEGORIES: EquipmentCategory[] = [

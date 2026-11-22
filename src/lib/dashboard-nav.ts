@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   Package,
   PackagePlus,
+  Tags,
   UserRound,
   UsersRound,
 } from "lucide-react";
@@ -66,6 +67,11 @@ export function getDashboardNav(
             icon: Package,
           },
           {
+            label: "Categories",
+            href: "/dashboard/categories",
+            icon: Tags,
+          },
+          {
             label: "All Rentals",
             href: "/dashboard/rentals",
             icon: ClipboardList,
@@ -101,6 +107,11 @@ export function getDashboardNav(
             label: "My Equipment",
             href: "/dashboard/equipment",
             icon: Package,
+          },
+          {
+            label: "Categories",
+            href: "/dashboard/categories",
+            icon: Tags,
           },
           {
             label: "My Rentals",

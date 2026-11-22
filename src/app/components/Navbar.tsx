@@ -20,7 +20,7 @@ const navLinks = [
     href: "/",
   },
   {
-    label: "Equipment",
+    label: "All Equipment",
     href: "/equipment",
   },
   {

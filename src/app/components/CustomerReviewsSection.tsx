@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Quote, Star } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 
 type CustomerReview = {
   id: string;
@@ -80,6 +81,8 @@ function RatingStars({ rating }: { rating: number }) {
 }
 
 export default function CustomerReviewsSection() {
+  const reduceMotion = useReducedMotion();
+
   return (
     <section
       id="customer-reviews"
@@ -87,7 +90,13 @@ export default function CustomerReviewsSection() {
     >
       <div className="mx-auto max-w-7xl">
         {/* Section Header */}
-        <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+        <motion.div
+          className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end"
+          initial={reduceMotion ? undefined : { opacity: 0, y: 22, filter: "blur(8px)" }}
+          whileInView={reduceMotion ? undefined : { opacity: 1, y: 0, filter: "blur(0px)" }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        >
           <div className="max-w-2xl">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#6e13f9]/20 bg-[#6e13f9]/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-[#6e13f9] dark:border-[#a66cff]/25 dark:text-[#b78aff]">
               <Quote className="h-3.5 w-3.5" />
@@ -106,14 +115,42 @@ export default function CustomerReviewsSection() {
               transport, media shoots, and site operations.
             </p>
           </div>
-        </div>
+        </motion.div>
 
         {/* 4+ Customer Review Cards */}
-        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <motion.div
+          className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+          initial={reduceMotion ? undefined : "hidden"}
+          whileInView={reduceMotion ? undefined : "show"}
+          viewport={{ once: true, amount: 0.15 }}
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.09 } },
+          }}
+        >
           {CUSTOMER_REVIEWS.map((review) => (
-            <article
+            <motion.article
               key={review.id}
-              className="flex flex-col justify-between rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#6e13f9]/50 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900"
+              className="flex flex-col justify-between rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm transition-colors duration-300 hover:border-[#6e13f9]/50 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900"
+              variants={{
+                hidden: {
+                  opacity: 0,
+                  y: 26,
+                  filter: "blur(8px)",
+                },
+                show: {
+                  opacity: 1,
+                  y: 0,
+                  filter: "blur(0px)",
+                  transition: {
+                    duration: 0.55,
+                    ease: [0.22, 1, 0.36, 1],
+                  },
+                },
+              }}
+              whileHover={
+                reduceMotion ? undefined : { y: -6 }
+              }
             >
               <div>
                 <div className="flex items-center justify-between gap-2">
@@ -136,9 +173,9 @@ export default function CustomerReviewsSection() {
                   {review.roleOrContext}
                 </p>
               </div>
-            </article>
+            </motion.article>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

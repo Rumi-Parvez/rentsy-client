@@ -38,9 +38,6 @@ export default function RegisterPage() {
     name: "",
     email: "",
     password: "",
-    phone: "",
-    address: "",
-    photoURL: "",
     role: "customer" as SignUpRole,
   });
 
@@ -139,15 +136,6 @@ export default function RegisterPage() {
     const cleanEmail =
       formData.email.trim().toLowerCase();
 
-    const cleanPhone =
-      formData.phone.trim();
-
-    const cleanAddress =
-      formData.address.trim();
-
-    const cleanPhoto =
-      formData.photoURL.trim();
-
     const selectedRole =
       formData.role;
 
@@ -187,27 +175,6 @@ export default function RegisterPage() {
       return;
     }
 
-    if (!cleanPhone) {
-      toast.error(
-        "Phone number is required."
-      );
-      return;
-    }
-
-    if (!cleanAddress) {
-      toast.error(
-        "Address is required."
-      );
-      return;
-    }
-
-    if (!cleanPhoto) {
-      toast.error(
-        "Photo URL is required."
-      );
-      return;
-    }
-
     setLoading(true);
 
     try {
@@ -233,7 +200,6 @@ export default function RegisterPage() {
           name: cleanName,
           email: cleanEmail,
           password: formData.password,
-          image: cleanPhoto,
         });
 
       if (error) {
@@ -253,9 +219,9 @@ export default function RegisterPage() {
       await syncUserWithBackend({
         name: cleanName,
         email: cleanEmail,
-        image: cleanPhoto,
-        phone: cleanPhone,
-        address: cleanAddress,
+        image: "",
+        phone: "",
+        address: "",
         role: selectedRole,
       });
 
@@ -515,77 +481,12 @@ export default function RegisterPage() {
               </div>
 
               {/* =================================================
-                  PHONE + ADDRESS
+                  PROFILE DETAILS NOTE
               ================================================== */}
 
-              <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
-
-                {/* Phone */}
-                <div>
-                  <label className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-300">
-                    Phone
-                  </label>
-
-                  <input
-                    type="text"
-                    name="phone"
-                    required
-                    value={
-                      formData.phone
-                    }
-                    onChange={
-                      handleChange
-                    }
-                    placeholder="+8801XXXXXXXXX"
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#6e13f9] focus:ring-2 focus:ring-[#6e13f9]/15 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-[#8b45ff]"
-                  />
-                </div>
-
-                {/* Address */}
-                <div>
-                  <label className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-300">
-                    Address
-                  </label>
-
-                  <input
-                    type="text"
-                    name="address"
-                    required
-                    value={
-                      formData.address
-                    }
-                    onChange={
-                      handleChange
-                    }
-                    placeholder="Your address"
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#6e13f9] focus:ring-2 focus:ring-[#6e13f9]/15 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-[#8b45ff]"
-                  />
-                </div>
-
-              </div>
-
-              {/* =================================================
-                  PHOTO URL
-              ================================================== */}
-
-              <div>
-                <label className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-300">
-                  Photo URL
-                </label>
-
-                <input
-                  type="url"
-                  name="photoURL"
-                  required
-                  value={
-                    formData.photoURL
-                  }
-                  onChange={
-                    handleChange
-                  }
-                  placeholder="https://your-image-url.com/profile.jpg"
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#6e13f9] focus:ring-2 focus:ring-[#6e13f9]/15 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-[#8b45ff]"
-                />
+              <div className="rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-[11px] leading-5 text-slate-500 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-400">
+                You can add your phone number, address and profile photo
+                later from your dashboard profile.
               </div>
 
               {/* =================================================

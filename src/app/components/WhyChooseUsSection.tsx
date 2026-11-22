@@ -11,6 +11,7 @@ import {
   Sparkles,
   WalletCards,
 } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 
 type BenefitItem = {
   title: string;

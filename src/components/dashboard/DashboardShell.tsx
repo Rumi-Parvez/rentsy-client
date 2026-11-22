@@ -103,6 +103,10 @@ export default function DashboardShell({
             href: "/dashboard/equipment?status=pending",
           },
           {
+            label: "Approve category requests",
+            href: "/dashboard/categories",
+          },
+          {
             label: "Manage all rentals",
             href: "/dashboard/rentals",
           },

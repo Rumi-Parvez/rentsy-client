@@ -15,6 +15,7 @@ import {
   RefreshCw,
   Search,
 } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 
 import {
   DEFAULT_EQUIPMENT_CATEGORIES,
@@ -27,6 +28,8 @@ import { SERVER_URL } from "@/lib/api";
 const API_BASE_URL = SERVER_URL;
 
 export default function CategoriesSection() {
+  const reduceMotion = useReducedMotion();
+
   const [categories, setCategories] = useState<
     EquipmentCategory[]
   >(DEFAULT_EQUIPMENT_CATEGORIES);
@@ -102,7 +105,13 @@ export default function CategoriesSection() {
 
         {/* Header & Search */}
 
-        <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+        <motion.div
+          className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end"
+          initial={reduceMotion ? undefined : { opacity: 0, y: 22, filter: "blur(8px)" }}
+          whileInView={reduceMotion ? undefined : { opacity: 1, y: 0, filter: "blur(0px)" }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        >
           <div>
           
 
@@ -139,7 +148,7 @@ export default function CategoriesSection() {
               <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
             </Link>
           </div>
-        </div>
+        </motion.div>
 
         {/* Loading State */}
 
@@ -193,41 +202,72 @@ export default function CategoriesSection() {
         {/* Horizontal Circular Category Strip */}
 
         {!loading && categories.length > 0 && (
-          <div className="mt-8 flex items-start gap-6 overflow-x-auto pb-4 pt-1 lg:grid lg:grid-cols-6 lg:gap-5 lg:overflow-visible lg:pb-0">
+          <motion.div
+            className="mt-8 flex items-start gap-6 overflow-x-auto pb-4 pt-1 lg:grid lg:grid-cols-6 lg:gap-5 lg:overflow-visible lg:pb-0"
+            initial={reduceMotion ? undefined : "hidden"}
+            whileInView={reduceMotion ? undefined : "show"}
+            viewport={{ once: true, amount: 0.2 }}
+            variants={{
+              hidden: {},
+              show: { transition: { staggerChildren: 0.07 } },
+            }}
+          >
             {categories.map((cat) => (
-              <Link
+              <motion.div
                 key={cat.slug || cat.name}
-                href={`/equipment?category=${encodeURIComponent(
-                  cat.name
-                )}`}
-                className="group flex w-32 shrink-0 flex-col items-center text-center lg:w-auto"
+                className="shrink-0 lg:w-auto"
+                variants={{
+                  hidden: {
+                    opacity: 0,
+                    y: 24,
+                    scale: 0.92,
+                    filter: "blur(8px)",
+                  },
+                  show: {
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                    filter: "blur(0px)",
+                    transition: {
+                      duration: 0.5,
+                      ease: [0.22, 1, 0.36, 1],
+                    },
+                  },
+                }}
               >
-                <div className="relative h-24 w-24 rounded-full border-2 border-slate-200 bg-slate-100 p-1 shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:border-[#6e13f9] group-hover:shadow-[0_12px_24px_-8px_rgba(110,19,249,0.4)] dark:border-slate-800 dark:bg-slate-900 sm:h-28 sm:w-28">
-                  <div className="relative h-full w-full overflow-hidden rounded-full">
-                    <Image
-                      src={cat.imageUrl}
-                      alt={cat.name}
-                      width={500}
-                      height={500}
-                      className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
-                    />
+                <Link
+                  href={`/equipment?category=${encodeURIComponent(
+                    cat.name
+                  )}`}
+                  className="group flex w-32 flex-col items-center text-center lg:w-auto"
+                >
+                  <div className="relative h-24 w-24 rounded-full border-2 border-slate-200 bg-slate-100 p-1 shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:border-[#6e13f9] group-hover:shadow-[0_12px_24px_-8px_rgba(110,19,249,0.4)] dark:border-slate-800 dark:bg-slate-900 sm:h-28 sm:w-28">
+                    <div className="relative h-full w-full overflow-hidden rounded-full">
+                      <Image
+                        src={cat.imageUrl}
+                        alt={cat.name}
+                        width={500}
+                        height={500}
+                        className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
+                      />
+                    </div>
+
+                    <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#6e13f9] px-2.5 py-0.5 text-[10px] font-bold text-white shadow">
+                      {cat.equipmentCount}
+                    </span>
                   </div>
 
-                  <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#6e13f9] px-2.5 py-0.5 text-[10px] font-bold text-white shadow">
-                    {cat.equipmentCount}
-                  </span>
-                </div>
+                  <h3 className="mt-3.5 line-clamp-2 text-xs font-extrabold leading-snug text-slate-900 transition-colors group-hover:text-[#6e13f9] dark:text-white dark:group-hover:text-[#a66cff] sm:text-sm">
+                    {cat.name}
+                  </h3>
 
-                <h3 className="mt-3.5 line-clamp-2 text-xs font-extrabold leading-snug text-slate-900 transition-colors group-hover:text-[#6e13f9] dark:text-white dark:group-hover:text-[#a66cff] sm:text-sm">
-                  {cat.name}
-                </h3>
-
-                <p className="mt-1 line-clamp-2 text-[11px] leading-4 text-slate-500 dark:text-slate-400">
-                  {cat.description}
-                </p>
-              </Link>
+                  <p className="mt-1 line-clamp-2 text-[11px] leading-4 text-slate-500 dark:text-slate-400">
+                    {cat.description}
+                  </p>
+                </Link>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
     </section>

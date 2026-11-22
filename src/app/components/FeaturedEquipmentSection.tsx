@@ -14,6 +14,7 @@ import {
   ArrowRight,
   RefreshCw,
 } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 
 import EquipmentCard from "./EquipmentCard";
 import { SERVER_URL } from "@/lib/api";
@@ -62,6 +63,7 @@ function normalizeId(
 
 export default function FeaturedEquipmentSection() {
   const router = useRouter();
+  const reduceMotion = useReducedMotion();
 
   const [items, setItems] = useState<
     FeaturedEquipmentItem[]
@@ -191,7 +193,13 @@ useEffect(() => {
 
         {/* Section Header */}
 
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <motion.div
+          className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between"
+          initial={reduceMotion ? undefined : { opacity: 0, y: 24, filter: "blur(8px)" }}
+          whileInView={reduceMotion ? undefined : { opacity: 1, y: 0, filter: "blur(0px)" }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
           <div className="max-w-2xl">
             <h2 className="text-3xl font-extrabold leading-[1.1] tracking-tight sm:text-4xl lg:text-5xl">
               Top approved{" "}
@@ -214,7 +222,7 @@ useEffect(() => {
 
             <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
           </Link>
-        </div>
+        </motion.div>
 
         {/* Loading State */}
 
@@ -294,23 +302,53 @@ useEffect(() => {
         {!loading &&
           !error &&
           items.length > 0 && (
-            <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <motion.div
+              className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+              initial={reduceMotion ? undefined : "hidden"}
+              whileInView={reduceMotion ? undefined : "show"}
+              viewport={{ once: true, amount: 0.1 }}
+              variants={{
+                hidden: {},
+                show: { transition: { staggerChildren: 0.08 } },
+              }}
+            >
               {items.map((item) => {
                 const id = normalizeId(item._id);
 
                 return (
-                  <EquipmentCard
+                  <motion.div
                     key={id}
-                    equipment={item}
-                    onViewDetails={(equipmentId) =>
-                      void handleViewDetails(
-                        equipmentId
-                      )
-                    }
-                  />
+                    variants={{
+                      hidden: {
+                        opacity: 0,
+                        y: 28,
+                        scale: 0.97,
+                        filter: "blur(8px)",
+                      },
+                      show: {
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        filter: "blur(0px)",
+                        transition: {
+                          duration: 0.55,
+                          ease: [0.22, 1, 0.36, 1],
+                        },
+                      },
+                    }}
+                  >
+                    <EquipmentCard
+                      equipment={item}
+                      onViewDetails={(equipmentId) =>
+                        void handleViewDetails(
+                          equipmentId
+                        )
+                      }
+                    />
+                  </motion.div>
                 );
               })}
-            </div>
+            </motion.div>
           )}
       </div>
     </section>
