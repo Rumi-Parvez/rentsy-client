@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "@/components/ImageWithFallback";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
+import Image from "@/components/ImageWithFallback";
 
 import {
   ArrowRight,
