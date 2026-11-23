@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 import Image from "@/components/ImageWithFallback";
 
@@ -24,8 +23,6 @@ const CRANE_IMAGE_URL =
   "https://cdn.prod.website-files.com/6246d8c921709e497eef110f/67f550a672bb91ad04255caa_intermodal-container-tracking.jpg";
 
 export default function SignInPage() {
-  const router = useRouter();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] =
     useState("");
@@ -78,7 +75,6 @@ export default function SignInPage() {
         await signIn.email({
           email: cleanEmail,
           password,
-          callbackURL: redirectTo,
         });
 
       if (error) {
@@ -95,8 +91,10 @@ export default function SignInPage() {
       );
 
       clearTokenCache();
-      router.push(redirectTo);
-      router.refresh();
+
+      // Use a full page load so the freshly created session cookie is
+      // sent with the dashboard request (client-side routing can race it).
+      window.location.assign(redirectTo);
     } catch (error: unknown) {
       const message =
         error instanceof Error

@@ -751,32 +751,34 @@ export default function EquipmentDetailPage() {
                   </button>
                 )}
 
-                <button
-                  type="button"
-                  disabled={favoriteLoading}
-                  onClick={() => void handleToggleFavorite()}
-                  aria-pressed={isFavorite}
-                  className={`inline-flex w-full items-center justify-center gap-2 rounded-xl border py-2.5 text-xs font-bold transition ${
-                    isFavorite
-                      ? "border-rose-500 bg-rose-500/10 text-rose-600 dark:text-rose-400"
-                      : "border-slate-200 bg-slate-50 text-slate-700 hover:border-[#6e13f9] hover:text-[#6e13f9] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-                  }`}
-                >
-                  <Heart
-                    className={`h-4 w-4 ${
-                      isFavorite ? "fill-rose-500 text-rose-500" : ""
+                {(isCustomer || !userRole) && (
+                  <button
+                    type="button"
+                    disabled={favoriteLoading}
+                    onClick={() => void handleToggleFavorite()}
+                    aria-pressed={isFavorite}
+                    className={`inline-flex w-full items-center justify-center gap-2 rounded-xl border py-2.5 text-xs font-bold transition ${
+                      isFavorite
+                        ? "border-rose-500 bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                        : "border-slate-200 bg-slate-50 text-slate-700 hover:border-[#6e13f9] hover:text-[#6e13f9] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                     }`}
-                  />
-                  <span>
-                    {favoriteLoading
-                      ? isFavorite
-                        ? "Removing..."
-                        : "Saving..."
-                      : isFavorite
-                      ? "Saved in Favorites (Remove)"
-                      : "Add to Favorite"}
-                  </span>
-                </button>
+                  >
+                    <Heart
+                      className={`h-4 w-4 ${
+                        isFavorite ? "fill-rose-500 text-rose-500" : ""
+                      }`}
+                    />
+                    <span>
+                      {favoriteLoading
+                        ? isFavorite
+                          ? "Removing..."
+                          : "Saving..."
+                        : isFavorite
+                        ? "Saved in Favorites (Remove)"
+                        : "Add to Favorite"}
+                    </span>
+                  </button>
+                )}
               </div>
             </div>
           </div>

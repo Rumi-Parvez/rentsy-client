@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 import Image from "@/components/ImageWithFallback";
 
@@ -19,7 +18,6 @@ import { FcGoogle } from "react-icons/fc";
 import logoImg from "../../assets/rEntsy-Photoroom.png";
 
 import {
-  authClient,
   signIn,
   signUp,
 } from "@/lib/auth-client";
@@ -30,8 +28,6 @@ const CRANE_IMAGE_URL =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTk5iCFNqhjCZQXBgZ64B_J9bBtvZPqnnWt67SBUSezz8XuUNIBCnxNuGd0&s=10";
 
 export default function RegisterPage() {
-  const router = useRouter();
-
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -172,11 +168,10 @@ export default function RegisterPage() {
 
       toast.success("Account created successfully.");
 
-      router.push(
-        "/dashboard"
-      );
-
-      router.refresh();
+      // A full page load guarantees the freshly created session cookie
+      // is sent with the dashboard request.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+      window.location.assign("/dashboard");
     } catch (error: unknown) {
       console.error(
         "Registration error:",
