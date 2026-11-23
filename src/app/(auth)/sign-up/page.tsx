@@ -21,6 +21,7 @@ import {
   signIn,
   signUp,
 } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 type SignUpRole = "customer" | "owner";
 
@@ -28,6 +29,7 @@ const CRANE_IMAGE_URL =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTk5iCFNqhjCZQXBgZ64B_J9bBtvZPqnnWt67SBUSezz8XuUNIBCnxNuGd0&s=10";
 
 export default function RegisterPage() {
+  const route = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -171,7 +173,7 @@ export default function RegisterPage() {
       // A full page load guarantees the freshly created session cookie
       // is sent with the dashboard request.
       // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-      window.location.assign("/dashboard");
+      route.push('/dashboard')
     } catch (error: unknown) {
       console.error(
         "Registration error:",
