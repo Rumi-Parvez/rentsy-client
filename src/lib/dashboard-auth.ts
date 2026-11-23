@@ -21,7 +21,9 @@ function toRole(value: unknown): UserRole {
   return "customer";
 }
 
-function serializeUser(user: Record<string, unknown>): DashboardUser {
+function serializeUser(
+  user: Record<string, unknown>
+): DashboardUser {
   return {
     _id: String(user._id ?? ""),
     name: String(user.name ?? "User"),
@@ -30,12 +32,14 @@ function serializeUser(user: Record<string, unknown>): DashboardUser {
     phone: user.phone ? String(user.phone) : "",
     address: user.address ? String(user.address) : "",
     role: toRole(user.role),
+
     createdAt:
       user.createdAt instanceof Date
         ? user.createdAt.toISOString()
         : user.createdAt
           ? String(user.createdAt)
           : undefined,
+
     updatedAt:
       user.updatedAt instanceof Date
         ? user.updatedAt.toISOString()
@@ -46,6 +50,9 @@ function serializeUser(user: Record<string, unknown>): DashboardUser {
 }
 
 export async function getDashboardUser(): Promise<DashboardUser | null> {
+  // --------------------------------------------------
+  // 1. Get the REAL Better Auth session
+  // --------------------------------------------------
   let session;
 
   try {
@@ -53,21 +60,30 @@ export async function getDashboardUser(): Promise<DashboardUser | null> {
       headers: await headers(),
     });
   } catch (error) {
-    console.error("Dashboard session lookup failed:", error);
+    console.error("Better Auth session lookup failed:", error);
     return null;
   }
 
-  if (!session?.user?.email) {
+  // --------------------------------------------------
+  // 2. No valid session
+  // --------------------------------------------------
+  if (!session?.user?.id || !session.user.email) {
     return null;
   }
 
-  const email = session.user.email.toLowerCase();
+  const email = session.user.email.trim().toLowerCase();
 
+  // --------------------------------------------------
+  // 3. Find/create the application user in MongoDB
+  // --------------------------------------------------
   try {
     const users = db.collection("users");
 
     let user = await users.findOne({ email });
 
+    // ------------------------------------------------
+    // 4. User does not exist -> create user
+    // ------------------------------------------------
     if (!user) {
       const now = new Date();
 
@@ -75,21 +91,38 @@ export async function getDashboardUser(): Promise<DashboardUser | null> {
         ? "admin"
         : "customer";
 
-      const document = {
-        name: session.user.name?.trim() || email.split("@")[0],
+      const newUser = {
+        name:
+          session.user.name?.trim() ||
+          email.split("@")[0],
+
         email,
+
         image: session.user.image || "",
+
         phone: "",
+
         address: "",
+
         role,
+
         createdAt: now,
+
         updatedAt: now,
       };
 
-      const result = await users.insertOne(document);
+      const result = await users.insertOne(newUser);
 
-      user = { _id: result.insertedId, ...document };
-    } else if (
+      user = {
+        _id: result.insertedId,
+        ...newUser,
+      };
+    }
+
+    // ------------------------------------------------
+    // 5. Keep ADMIN_EMAILS synced with admin role
+    // ------------------------------------------------
+    else if (
       ADMIN_EMAILS.includes(email) &&
       user.role !== "admin"
     ) {
@@ -103,23 +136,41 @@ export async function getDashboardUser(): Promise<DashboardUser | null> {
         }
       );
 
-      user = { ...user, role: "admin" };
+      user = {
+        ...user,
+        role: "admin",
+      };
     }
 
-    return serializeUser(user as Record<string, unknown>);
+    // ------------------------------------------------
+    // 6. Return the application user
+    // ------------------------------------------------
+    return serializeUser(
+      user as Record<string, unknown>
+    );
   } catch (error) {
     console.error("Dashboard user lookup failed:", error);
 
-    // Never elevate access when the database cannot be read.
-    // The session identity is still trusted for name/email only.
+    // IMPORTANT:
+    // If MongoDB fails, do NOT give admin/owner privileges.
+    // The Better Auth session is valid, but application
+    // user/role data could not be verified safely.
+
     return {
-      _id: String(session.user.id ?? ""),
+      _id: String(session.user.id),
       name: session.user.name || "User",
       email,
+
       image: session.user.image || "",
+
       phone: "",
+
       address: "",
-      role: ADMIN_EMAILS.includes(email) ? "admin" : "customer",
+
+      role: "customer",
+
+      createdAt: undefined,
+      updatedAt: undefined,
     };
   }
 }
@@ -134,7 +185,9 @@ export async function requireDashboardUser() {
   return user;
 }
 
-export async function requireRole(roles: UserRole[]) {
+export async function requireRole(
+  roles: UserRole[]
+) {
   const user = await requireDashboardUser();
 
   if (!roles.includes(user.role)) {
