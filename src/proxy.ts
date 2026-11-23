@@ -1,35 +1,20 @@
-import { NextRequest, NextResponse } from "next/server";
+import { getSessionCookie } from "better-auth/cookies";
+import { NextResponse, type NextRequest } from "next/server";
 
-import { auth } from "@/lib/auth";
-
-export async function proxy(request: NextRequest) {
-  try {
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    });
-
-    if (!session) {
-      const signInUrl = new URL("/sign-in", request.url);
-
-      signInUrl.searchParams.set(
-        "callbackURL",
-        `${request.nextUrl.pathname}${request.nextUrl.search}`
-      );
-
-      return NextResponse.redirect(signInUrl);
-    }
-
+export function proxy(request: NextRequest) {
+  if (getSessionCookie(request)) {
     return NextResponse.next();
-  } catch (error) {
-    console.error("Proxy authentication error:", error);
-
-    return NextResponse.redirect(new URL("/sign-in", request.url));
   }
+
+  const signInUrl = new URL("/sign-in", request.url);
+  signInUrl.searchParams.set(
+    "redirect",
+    `${request.nextUrl.pathname}${request.nextUrl.search}`
+  );
+
+  return NextResponse.redirect(signInUrl);
 }
 
 export const config = {
-  matcher: [
-    "/dashboard/:path*",
-    "/equipment/:path",
-  ],
+  matcher: ["/dashboard/:path*", "/equipment/:path+"],
 };
