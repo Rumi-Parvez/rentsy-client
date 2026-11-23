@@ -1,17 +1,8 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { db } from "@/lib/auth";
+import { auth, db } from "@/lib/auth";
 import type { DashboardUser, UserRole } from "@/types/dashboard";
-
-const VERIFIED_USER_HEADER = "x-rentsy-verified-user";
-
-type VerifiedSessionUser = {
-  id: string;
-  email: string;
-  name: string;
-  image: string;
-};
 
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "")
   .split(",")
@@ -55,46 +46,22 @@ function serializeUser(user: Record<string, unknown>): DashboardUser {
 }
 
 export async function getDashboardUser(): Promise<DashboardUser | null> {
-  const encodedUser = (await headers()).get(VERIFIED_USER_HEADER);
-
-  if (!encodedUser) {
-    return null;
-  }
-
-  let sessionUser: VerifiedSessionUser;
+  let session;
 
   try {
-    const parsed: unknown = JSON.parse(decodeURIComponent(encodedUser));
-
-    if (
-      typeof parsed !== "object" ||
-      parsed === null ||
-      !("id" in parsed) ||
-      typeof parsed.id !== "string" ||
-      !("email" in parsed) ||
-      typeof parsed.email !== "string"
-    ) {
-      return null;
-    }
-
-    sessionUser = {
-      id: parsed.id,
-      email: parsed.email,
-      name:
-        "name" in parsed && typeof parsed.name === "string"
-          ? parsed.name
-          : "",
-      image:
-        "image" in parsed && typeof parsed.image === "string"
-          ? parsed.image
-          : "",
-    };
+    session = await auth.api.getSession({
+      headers: await headers(),
+    });
   } catch (error) {
-    console.error("Verified dashboard session header is invalid:", error);
+    console.error("Dashboard session lookup failed:", error);
     return null;
   }
 
-  const email = sessionUser.email.toLowerCase();
+  if (!session?.user?.email) {
+    return null;
+  }
+
+  const email = session.user.email.toLowerCase();
 
   try {
     const users = db.collection("users");
@@ -109,9 +76,9 @@ export async function getDashboardUser(): Promise<DashboardUser | null> {
         : "customer";
 
       const document = {
-        name: sessionUser.name.trim() || email.split("@")[0],
+        name: session.user.name?.trim() || email.split("@")[0],
         email,
-        image: sessionUser.image,
+        image: session.user.image || "",
         phone: "",
         address: "",
         role,
@@ -146,10 +113,10 @@ export async function getDashboardUser(): Promise<DashboardUser | null> {
     // Never elevate access when the database cannot be read.
     // The session identity is still trusted for name/email only.
     return {
-      _id: sessionUser.id,
-      name: sessionUser.name || "User",
+      _id: String(session.user.id ?? ""),
+      name: session.user.name || "User",
       email,
-      image: sessionUser.image,
+      image: session.user.image || "",
       phone: "",
       address: "",
       role: ADMIN_EMAILS.includes(email) ? "admin" : "customer",
@@ -161,7 +128,7 @@ export async function requireDashboardUser() {
   const user = await getDashboardUser();
 
   if (!user) {
-    throw new Error("Dashboard request is missing a verified proxy session.");
+    redirect("/sign-in");
   }
 
   return user;
