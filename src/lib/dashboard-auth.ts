@@ -51,18 +51,15 @@ function serializeUser(
 }
 
 /**
- * Get the currently authenticated Dashboard user.
+ * Get the authenticated Dashboard user.
  *
- * This function:
- * 1. Gets the real Better Auth session.
- * 2. Finds or creates the application user in MongoDB.
- * 3. Keeps ADMIN_EMAILS synchronized with the admin role.
- * 4. Returns a safe DashboardUser object.
+ * If there is no valid Better Auth session,
+ * redirect to the sign-in page.
  */
 export const getDashboardUser = cache(
-  async (): Promise<DashboardUser | null> => {
+  async (): Promise<DashboardUser> => {
     // --------------------------------------------------
-    // 1. Get the Better Auth session
+    // 1. Get Better Auth session
     // --------------------------------------------------
 
     let session;
@@ -82,11 +79,11 @@ export const getDashboardUser = cache(
         error
       );
 
-      return null;
+      redirect("/sign-in");
     }
 
     // --------------------------------------------------
-    // 2. No authenticated session
+    // 2. No valid session
     // --------------------------------------------------
 
     if (!session?.user?.id || !session.user.email) {
@@ -94,13 +91,15 @@ export const getDashboardUser = cache(
         "[Dashboard Auth] No authenticated session"
       );
 
-      return null;
+      redirect("/sign-in");
     }
 
-    const email = session.user.email.trim().toLowerCase();
+    const email = session.user.email
+      .trim()
+      .toLowerCase();
 
     // --------------------------------------------------
-    // 3. Find application user
+    // 3. Find/create application user
     // --------------------------------------------------
 
     try {
@@ -109,7 +108,7 @@ export const getDashboardUser = cache(
       let user = await users.findOne({ email });
 
       // ------------------------------------------------
-      // 4. Create application user if not found
+      // 4. Create application user
       // ------------------------------------------------
 
       if (!user) {
@@ -180,7 +179,7 @@ export const getDashboardUser = cache(
       }
 
       // ------------------------------------------------
-      // 6. Return safe Dashboard user
+      // 6. Return Dashboard user
       // ------------------------------------------------
 
       return serializeUser(
@@ -193,16 +192,15 @@ export const getDashboardUser = cache(
       );
 
       /*
-       * IMPORTANT:
-       *
-       * Do not create a fake authenticated user when
+       * Do NOT create a fake customer user when
        * MongoDB fails.
        *
-       * If the application user cannot be verified,
-       * return null instead of silently creating a
-       * customer fallback.
+       * The session is valid, but the application user
+       * could not be verified safely.
        */
-      return null;
+      throw new Error(
+        "Unable to load Dashboard user."
+      );
     }
   }
 );
@@ -210,17 +208,11 @@ export const getDashboardUser = cache(
 /**
  * Require an authenticated Dashboard user.
  *
- * If no valid Better Auth session exists,
- * redirect the user to the sign-in page.
+ * This is kept as a separate helper for role-based
+ * protected pages.
  */
-export async function requireDashboardUser() {
-  const user = await getDashboardUser();
-
-  if (!user) {
-    redirect("/sign-in");
-  }
-
-  return user;
+export async function requireDashboardUser(): Promise<DashboardUser> {
+  return getDashboardUser();
 }
 
 /**
@@ -230,14 +222,12 @@ export async function requireDashboardUser() {
  *
  * await requireRole(["admin"]);
  *
- * or:
- *
  * await requireRole(["owner", "admin"]);
  */
 export async function requireRole(
   roles: UserRole[]
-) {
-  const user = await requireDashboardUser();
+): Promise<DashboardUser> {
+  const user = await getDashboardUser();
 
   if (!roles.includes(user.role)) {
     redirect("/dashboard?denied=1");
