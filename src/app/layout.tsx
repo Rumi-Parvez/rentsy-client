@@ -4,7 +4,7 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import dns from 'node:dns';
-dns.setServers(['8.8.8.8', '8.8.4.4']);
+
 import AppChrome from "./components/AppChrome";
 
 const geistSans = Geist({
@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 export const metadata: Metadata = {
   title: "rEntsy — Equipment Rental Dashboard",
   description:
