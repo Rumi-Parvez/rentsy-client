@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 
 import ProfileClient from "@/components/dashboard/ProfileClient";
-import { requireDashboardUser } from "@/lib/dashboard-auth";
+import { getDashboardUser } from "@/lib/dashboard-auth";
 
 export const metadata: Metadata = {
   title: "My profile — rEntsy Dashboard",
 };
 
 export default async function ProfilePage() {
-  const user = await requireDashboardUser();
+  const user = await getDashboardUser();
 
   return <ProfileClient user={user} />;
 }

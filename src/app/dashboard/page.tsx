@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import DashboardOverview from "@/components/dashboard/DashboardOverview";
-import { requireDashboardUser } from "@/lib/dashboard-auth";
+import { getDashboardUser } from "@/lib/dashboard-auth";
 
 export const metadata: Metadata = {
   title: "Overview — rEntsy Dashboard",
@@ -13,7 +13,7 @@ export default async function DashboardPage({
   searchParams: Promise<{ denied?: string }>;
 }) {
   const params = await searchParams;
-  const user = await requireDashboardUser();
+  const user = await getDashboardUser();
 
   const today = new Intl.DateTimeFormat("en-GB", {
     weekday: "short",

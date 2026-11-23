@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import DashboardShell from "@/components/dashboard/DashboardShell";
-import { requireDashboardUser } from "@/lib/dashboard-auth";
+import { getDashboardUser } from "@/lib/dashboard-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +16,7 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await requireDashboardUser();
+  const user = await getDashboardUser();
 
   return <DashboardShell user={user}>{children}</DashboardShell>;
 }

@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 
 import { auth, db } from "@/lib/auth";
 import type { DashboardUser, UserRole } from "@/types/dashboard";
@@ -49,7 +50,7 @@ function serializeUser(
   };
 }
 
-export async function getDashboardUser(): Promise<DashboardUser | null> {
+export const getDashboardUser = cache(async (): Promise<DashboardUser> => {
   // --------------------------------------------------
   // 1. Get the REAL Better Auth session
   // --------------------------------------------------
@@ -61,14 +62,14 @@ export async function getDashboardUser(): Promise<DashboardUser | null> {
     });
   } catch (error) {
     console.error("Better Auth session lookup failed:", error);
-    return null;
+    throw error;
   }
 
   // --------------------------------------------------
   // 2. No valid session
   // --------------------------------------------------
   if (!session?.user?.id || !session.user.email) {
-    return null;
+    throw new Error("Dashboard request has no authenticated Better Auth session.");
   }
 
   const email = session.user.email.trim().toLowerCase();
@@ -173,22 +174,12 @@ export async function getDashboardUser(): Promise<DashboardUser | null> {
       updatedAt: undefined,
     };
   }
-}
-
-export async function requireDashboardUser() {
-  const user = await getDashboardUser();
-
-  if (!user) {
-    redirect("/sign-in");
-  }
-
-  return user;
-}
+});
 
 export async function requireRole(
   roles: UserRole[]
 ) {
-  const user = await requireDashboardUser();
+  const user = await getDashboardUser();
 
   if (!roles.includes(user.role)) {
     redirect("/dashboard?denied=1");
