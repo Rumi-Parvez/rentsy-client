@@ -12,8 +12,8 @@ export default async function DashboardPage({
 }: {
   searchParams: Promise<{ denied?: string }>;
 }) {
-  const user = await requireDashboardUser();
   const params = await searchParams;
+  const user = await requireDashboardUser();
 
   const today = new Intl.DateTimeFormat("en-GB", {
     weekday: "short",
