@@ -3,7 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
-
+import dns from 'node:dns';
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 import AppChrome from "./components/AppChrome";
 
 const geistSans = Geist({

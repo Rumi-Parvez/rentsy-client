@@ -1,8 +1,10 @@
-import { getSessionCookie } from "better-auth/cookies";
 import { NextResponse, type NextRequest } from "next/server";
+import { getSessionCookie } from "better-auth/cookies";
+import dns from 'node:dns';
 
 import { auth } from "@/lib/auth";
 
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 export async function proxy(request: NextRequest) {
   if (!getSessionCookie(request)) {
     return redirectToSignIn(request);
