@@ -1,6 +1,6 @@
+import { cache } from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { cache } from "react";
 
 import { auth, db } from "@/lib/auth";
 import type { DashboardUser, UserRole } from "@/types/dashboard";
@@ -50,136 +50,194 @@ function serializeUser(
   };
 }
 
-export const getDashboardUser = cache(async (): Promise<DashboardUser> => {
-  // --------------------------------------------------
-  // 1. Get the REAL Better Auth session
-  // --------------------------------------------------
-  let session;
+/**
+ * Get the currently authenticated Dashboard user.
+ *
+ * This function:
+ * 1. Gets the real Better Auth session.
+ * 2. Finds or creates the application user in MongoDB.
+ * 3. Keeps ADMIN_EMAILS synchronized with the admin role.
+ * 4. Returns a safe DashboardUser object.
+ */
+export const getDashboardUser = cache(
+  async (): Promise<DashboardUser | null> => {
+    // --------------------------------------------------
+    // 1. Get the Better Auth session
+    // --------------------------------------------------
 
-  try {
-    session = await auth.api.getSession({
-      headers: await headers(),
-    });
-  } catch (error) {
-    console.error("Better Auth session lookup failed:", error);
-    throw error;
-  }
+    let session;
 
-  // --------------------------------------------------
-  // 2. No valid session
-  // --------------------------------------------------
-  if (!session?.user?.id || !session.user.email) {
-    throw new Error("Dashboard request has no authenticated Better Auth session.");
-  }
+    try {
+      session = await auth.api.getSession({
+        headers: await headers(),
+      });
 
-  const email = session.user.email.trim().toLowerCase();
-
-  // --------------------------------------------------
-  // 3. Find/create the application user in MongoDB
-  // --------------------------------------------------
-  try {
-    const users = db.collection("users");
-
-    let user = await users.findOne({ email });
-
-    // ------------------------------------------------
-    // 4. User does not exist -> create user
-    // ------------------------------------------------
-    if (!user) {
-      const now = new Date();
-
-      const role: UserRole = ADMIN_EMAILS.includes(email)
-        ? "admin"
-        : "customer";
-
-      const newUser = {
-        name:
-          session.user.name?.trim() ||
-          email.split("@")[0],
-
-        email,
-
-        image: session.user.image || "",
-
-        phone: "",
-
-        address: "",
-
-        role,
-
-        createdAt: now,
-
-        updatedAt: now,
-      };
-
-      const result = await users.insertOne(newUser);
-
-      user = {
-        _id: result.insertedId,
-        ...newUser,
-      };
-    }
-
-    // ------------------------------------------------
-    // 5. Keep ADMIN_EMAILS synced with admin role
-    // ------------------------------------------------
-    else if (
-      ADMIN_EMAILS.includes(email) &&
-      user.role !== "admin"
-    ) {
-      await users.updateOne(
-        { _id: user._id },
-        {
-          $set: {
-            role: "admin",
-            updatedAt: new Date(),
-          },
-        }
+      console.log(
+        "[Dashboard Auth] Session:",
+        session ? "FOUND" : "NULL"
+      );
+    } catch (error) {
+      console.error(
+        "[Dashboard Auth] Better Auth session lookup failed:",
+        error
       );
 
-      user = {
-        ...user,
-        role: "admin",
-      };
+      return null;
     }
 
-    // ------------------------------------------------
-    // 6. Return the application user
-    // ------------------------------------------------
-    return serializeUser(
-      user as Record<string, unknown>
-    );
-  } catch (error) {
-    console.error("Dashboard user lookup failed:", error);
+    // --------------------------------------------------
+    // 2. No authenticated session
+    // --------------------------------------------------
 
-    // IMPORTANT:
-    // If MongoDB fails, do NOT give admin/owner privileges.
-    // The Better Auth session is valid, but application
-    // user/role data could not be verified safely.
+    if (!session?.user?.id || !session.user.email) {
+      console.log(
+        "[Dashboard Auth] No authenticated session"
+      );
 
-    return {
-      _id: String(session.user.id),
-      name: session.user.name || "User",
-      email,
+      return null;
+    }
 
-      image: session.user.image || "",
+    const email = session.user.email.trim().toLowerCase();
 
-      phone: "",
+    // --------------------------------------------------
+    // 3. Find application user
+    // --------------------------------------------------
 
-      address: "",
+    try {
+      const users = db.collection("users");
 
-      role: "customer",
+      let user = await users.findOne({ email });
 
-      createdAt: undefined,
-      updatedAt: undefined,
-    };
+      // ------------------------------------------------
+      // 4. Create application user if not found
+      // ------------------------------------------------
+
+      if (!user) {
+        const now = new Date();
+
+        const role: UserRole = ADMIN_EMAILS.includes(email)
+          ? "admin"
+          : "customer";
+
+        const newUser = {
+          name:
+            session.user.name?.trim() ||
+            email.split("@")[0],
+
+          email,
+
+          image: session.user.image || "",
+
+          phone: "",
+
+          address: "",
+
+          role,
+
+          createdAt: now,
+
+          updatedAt: now,
+        };
+
+        const result = await users.insertOne(newUser);
+
+        user = {
+          _id: result.insertedId,
+          ...newUser,
+        };
+
+        console.log(
+          "[Dashboard Auth] Application user created"
+        );
+      }
+
+      // ------------------------------------------------
+      // 5. Sync admin role
+      // ------------------------------------------------
+
+      if (
+        ADMIN_EMAILS.includes(email) &&
+        user.role !== "admin"
+      ) {
+        await users.updateOne(
+          { _id: user._id },
+          {
+            $set: {
+              role: "admin",
+              updatedAt: new Date(),
+            },
+          }
+        );
+
+        user = {
+          ...user,
+          role: "admin",
+        };
+
+        console.log(
+          "[Dashboard Auth] Admin role synchronized"
+        );
+      }
+
+      // ------------------------------------------------
+      // 6. Return safe Dashboard user
+      // ------------------------------------------------
+
+      return serializeUser(
+        user as Record<string, unknown>
+      );
+    } catch (error) {
+      console.error(
+        "[Dashboard Auth] MongoDB user lookup failed:",
+        error
+      );
+
+      /*
+       * IMPORTANT:
+       *
+       * Do not create a fake authenticated user when
+       * MongoDB fails.
+       *
+       * If the application user cannot be verified,
+       * return null instead of silently creating a
+       * customer fallback.
+       */
+      return null;
+    }
   }
-});
+);
 
+/**
+ * Require an authenticated Dashboard user.
+ *
+ * If no valid Better Auth session exists,
+ * redirect the user to the sign-in page.
+ */
+export async function requireDashboardUser() {
+  const user = await getDashboardUser();
+
+  if (!user) {
+    redirect("/sign-in");
+  }
+
+  return user;
+}
+
+/**
+ * Require one of the specified application roles.
+ *
+ * Example:
+ *
+ * await requireRole(["admin"]);
+ *
+ * or:
+ *
+ * await requireRole(["owner", "admin"]);
+ */
 export async function requireRole(
   roles: UserRole[]
 ) {
-  const user = await getDashboardUser();
+  const user = await requireDashboardUser();
 
   if (!roles.includes(user.role)) {
     redirect("/dashboard?denied=1");
