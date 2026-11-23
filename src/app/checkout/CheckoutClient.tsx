@@ -18,6 +18,7 @@ import {
   Plus,
   ShieldCheck,
   User,
+  UserPlus,
 } from "lucide-react";
 import Image from "@/components/ImageWithFallback";
 
@@ -72,11 +73,18 @@ export default function CheckoutClient() {
 
   const [signedIn, setSignedIn] = useState(false);
   const [sessionChecked, setSessionChecked] = useState(false);
+  const [userRole, setUserRole] = useState("");
 
   const [quantity, setQuantity] = useState(requestedQuantity);
-  const [contactNumber, setContactNumber] = useState("");
-  const [deliveryAddress, setDeliveryAddress] = useState("");
-  const [notes, setNotes] = useState("");
+  const [contactNumber, setContactNumber] = useState(
+    () => searchParams.get("contact") || ""
+  );
+  const [deliveryAddress, setDeliveryAddress] = useState(
+    () => searchParams.get("address") || ""
+  );
+  const [notes, setNotes] = useState(
+    () => searchParams.get("notes") || ""
+  );
 
   const [paying, setPaying] = useState(false);
   const [payError, setPayError] = useState("");
@@ -123,6 +131,27 @@ export default function CheckoutClient() {
             `/sign-in?redirect=${encodeURIComponent(currentPath)}`
           );
           return;
+        }
+
+        // Load the role from the database so only customer accounts can
+        // continue to the payment step. Admin and owner accounts are
+        // blocked on the server as well.
+        try {
+          const token = await getAccessToken();
+          const meRes = await fetch(`${API_URL}/users/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+            cache: "no-store",
+          });
+
+          if (meRes.ok) {
+            const meData = await meRes.json();
+            const role = String(meData?.user?.role || "").toLowerCase();
+
+            if (active) setUserRole(role);
+          }
+        } catch {
+          // If the role cannot be loaded the server still rejects
+          // non-customer checkout attempts.
         }
 
         if (active) setSignedIn(true);
@@ -204,31 +233,8 @@ export default function CheckoutClient() {
     };
   }, [equipmentId]);
 
-  // The booking modal stores the customer's delivery details for this
-  // tab so the checkout form starts pre-filled.
-  useEffect(() => {
-    try {
-      const raw = window.sessionStorage.getItem("rentsy_checkout_draft");
-
-      if (!raw) return;
-
-      const draft = JSON.parse(raw) as {
-        equipmentId?: string;
-        contactNumber?: string;
-        deliveryAddress?: string;
-        additionalNotes?: string;
-      };
-
-      if (draft.equipmentId !== equipmentId) return;
-
-      setContactNumber(draft.contactNumber || "");
-      setDeliveryAddress(draft.deliveryAddress || "");
-      setNotes(draft.additionalNotes || "");
-    } catch {
-      // A missing or malformed draft is not an error; the customer can
-      // simply type their details.
-    }
-  }, [equipmentId]);
+  // Delivery details are passed from the booking form as query
+  // parameters, so no browser storage is used.
 
   const handlePay = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -359,6 +365,39 @@ export default function CheckoutClient() {
             className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-5 py-2.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
           >
             Contact support
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (userRole === "admin" || userRole === "owner") {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4 text-center dark:bg-slate-950 dark:text-white">
+        <span className="flex h-16 w-16 items-center justify-center rounded-3xl bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300">
+          <UserPlus className="h-7 w-7" />
+        </span>
+        <h1 className="mt-5 text-xl font-extrabold tracking-tight sm:text-2xl">
+          Customer account required
+        </h1>
+        <p className="mt-2 max-w-md text-sm text-slate-600 dark:text-slate-400">
+          You are signed in as {userRole}. Only customer accounts can book and
+          pay for equipment.
+        </p>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <Link
+            href="/sign-up?role=customer"
+            className="inline-flex items-center gap-2 rounded-full bg-[#6e13f9] px-5 py-2.5 text-xs font-semibold text-white transition hover:bg-[#5b0ed6]"
+          >
+            <UserPlus className="h-3.5 w-3.5" />
+            Sign Up as a Customer
+          </Link>
+          <Link
+            href={equipmentId ? `/equipment/${equipmentId}` : "/equipment"}
+            className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-5 py-2.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Back to equipment
           </Link>
         </div>
       </div>

@@ -48,8 +48,6 @@ export default function PaymentCancelClient() {
           },
           body: JSON.stringify({ checkoutId }),
         });
-
-        window.sessionStorage.removeItem("rentsy_checkout_draft");
       } catch {
         // Nothing to do: the customer already sees the cancel screen.
       }

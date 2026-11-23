@@ -120,12 +120,6 @@ export default function PaymentSuccessClient() {
       setBooking(data.booking || null);
       setState("success");
 
-      try {
-        window.sessionStorage.removeItem("rentsy_checkout_draft");
-      } catch {
-        // Storage can be disabled; the page still works.
-      }
-
       toast.success("Payment confirmed. Your booking is ready.");
     } catch (error) {
       setState("error");

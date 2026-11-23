@@ -26,12 +26,12 @@ import toast from "react-hot-toast";
 
 import { Avatar } from "@/components/dashboard/Avatar";
 import ThemeToggle from "@/app/components/navbar/ThemeToggle";
-import { authClient, useSession } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth-client";
 import {
   clearTokenCache,
-  apiPost,
   getErrorMessage,
 } from "@/lib/api";
+import { readCookie, writeCookie } from "@/lib/preferences";
 import {
   getDashboardNav,
   roleAccent,
@@ -53,18 +53,13 @@ export default function DashboardShell({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { data: session } = useSession();
 
   const [collapsed, setCollapsed] = useState(() => {
     if (typeof window === "undefined") {
       return false;
     }
 
-    try {
-      return window.localStorage.getItem(SIDEBAR_KEY) === "true";
-    } catch {
-      return false;
-    }
+    return readCookie(SIDEBAR_KEY) === "true";
   });
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -173,46 +168,10 @@ export default function DashboardShell({
     };
   }, []);
 
-  // Social sign-up stores the chosen role before redirecting.
-  // Sync it once the user lands on the dashboard.
-  useEffect(() => {
-    const pendingRole = window.localStorage.getItem(
-      "rentsy_pending_role"
-    );
-
-    if (!pendingRole || !session?.user?.email) {
-      return;
-    }
-
-    window.localStorage.removeItem("rentsy_pending_role");
-
-    if (pendingRole !== "customer" && pendingRole !== "owner") {
-      return;
-    }
-
-    apiPost("/users", {
-      name: session.user.name || pendingRole,
-      email: session.user.email,
-      image: session.user.image || "",
-      phone: "",
-      address: "",
-      role: pendingRole,
-    }).catch(() => {
-      // The profile is still created by the dashboard
-      // layout; this is only a role preference.
-    });
-  }, [session?.user?.email, session?.user?.image, session?.user?.name]);
-
   const toggleCollapsed = () => {
     setCollapsed((current) => {
       const next = !current;
-
-      try {
-        window.localStorage.setItem(SIDEBAR_KEY, String(next));
-      } catch {
-        // ignore storage errors
-      }
-
+      writeCookie(SIDEBAR_KEY, String(next));
       return next;
     });
   };
@@ -370,6 +329,12 @@ export default function DashboardShell({
               </form>
 
               <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+                <span>
+                  <Link href='/' >
+              <RiHome5Fill className="text-2xl text-purple-700 dark:text-white/80" />
+
+              </Link>
+                </span>
                 <button
                   type="button"
                   onClick={() => setMobileSearch((current) => !current)}
@@ -379,12 +344,7 @@ export default function DashboardShell({
                   <Search className="h-4 w-4" />
                 </button>
 
-                <span>
-                  <Link href='/' >
-              <RiHome5Fill className="text-2xl text-purple-700 dark:text-white/80" />
-
-              </Link>
-                </span>
+                
 
                 <ThemeToggle />
 

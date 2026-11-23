@@ -8,6 +8,8 @@ import React, {
   useState,
 } from "react";
 
+import { readCookie, writeCookie } from "@/lib/preferences";
+
 type Theme = "light" | "dark";
 
 interface ThemeContextType {
@@ -22,12 +24,7 @@ const STORAGE_KEY = "rentsy-theme";
 
 function getInitialTheme(): Theme {
   if (typeof window === "undefined") return "light";
-  try {
-    const saved = window.localStorage.getItem(STORAGE_KEY);
-    return saved === "dark" ? "dark" : "light";
-  } catch {
-    return "light";
-  }
+  return readCookie(STORAGE_KEY) === "dark" ? "dark" : "light";
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
@@ -36,11 +33,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const root = document.documentElement;
     root.classList.toggle("dark", theme === "dark");
-    try {
-      window.localStorage.setItem(STORAGE_KEY, theme);
-    } catch {
-      // ignore storage errors
-    }
+    writeCookie(STORAGE_KEY, theme);
   }, [theme]);
 
   const setTheme = useCallback((nextTheme: Theme) => {

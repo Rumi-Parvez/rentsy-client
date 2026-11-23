@@ -19,6 +19,7 @@ import {
   Phone,
   ShieldCheck,
   User,
+  UserPlus,
   X,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
@@ -98,6 +99,8 @@ export default function EquipmentDetailPage() {
   const [submitting, setSubmitting] = useState(false);
 
   const isCustomer = userRole === "customer";
+  const isRestrictedRole =
+    signedIn && (userRole === "admin" || userRole === "owner");
 
   // Load the signed-in user's role from the database (via the API) and
   // check whether this equipment is already saved in their favorites.
@@ -334,6 +337,13 @@ export default function EquipmentDetailPage() {
       return;
     }
 
+    if (userRole && userRole !== "customer") {
+      toast.error(
+        "Only customer accounts can book and pay for equipment. Please sign up as a customer."
+      );
+      return;
+    }
+
     if (!startDate || !endDate) {
       toast.error("Please select start and end dates.");
       return;
@@ -359,29 +369,28 @@ export default function EquipmentDetailPage() {
     try {
       const resolvedId = normalizeId(item._id) || equipmentId;
 
-      // Keep the customer's delivery details for the checkout page.
-      // They are short-lived, per-tab values, not permanent storage.
-      if (typeof window !== "undefined") {
-        window.sessionStorage.setItem(
-          "rentsy_checkout_draft",
-          JSON.stringify({
-            equipmentId: resolvedId,
-            contactNumber: contactNumber.trim(),
-            deliveryAddress: deliveryAddress.trim(),
-            additionalNotes: notes.trim(),
-          })
-        );
+      const checkoutParams = new URLSearchParams({
+        equipmentId: resolvedId,
+        start: startDate,
+        end: endDate,
+        qty: String(safeQuantity),
+      });
+
+      if (contactNumber.trim()) {
+        checkoutParams.set("contact", contactNumber.trim());
+      }
+
+      if (deliveryAddress.trim()) {
+        checkoutParams.set("address", deliveryAddress.trim());
+      }
+
+      if (notes.trim()) {
+        checkoutParams.set("notes", notes.trim());
       }
 
       setIsModalOpen(false);
 
-      router.push(
-        `/checkout?equipmentId=${encodeURIComponent(
-          resolvedId
-        )}&start=${encodeURIComponent(startDate)}&end=${encodeURIComponent(
-          endDate
-        )}&qty=${safeQuantity}`
-      );
+      router.push(`/checkout?${checkoutParams.toString()}`);
     } catch (err) {
       toast.error(
         err instanceof Error
@@ -689,31 +698,58 @@ export default function EquipmentDetailPage() {
               </div>
 
               <div className="mt-5 flex flex-col gap-2.5">
-                <button
-                  type="button"
-                  disabled={item.availableQuantity <= 0}
-                  onClick={() => {
-                    if (!signedIn) {
-                      toast.error("Please sign in to book this equipment.");
-                      router.push(
-                        `/sign-in?redirect=${encodeURIComponent(
-                          `/equipment/${equipmentId}`
-                        )}`
-                      );
-                      return;
-                    }
+                {isRestrictedRole ? (
+                  <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-left dark:border-amber-900/40 dark:bg-amber-950/20">
+                    <p className="flex items-center gap-1.5 text-xs font-bold text-amber-800 dark:text-amber-300">
+                      <UserPlus className="h-4 w-4" />
+                      Customer account required
+                    </p>
+                    <p className="mt-1.5 text-[11px] leading-5 text-amber-700 dark:text-amber-200/80">
+                      You are signed in as {userRole}. Only customer accounts
+                      can book and pay for equipment.
+                    </p>
+                    <Link
+                      href="/sign-up?role=customer"
+                      className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#6e13f9] py-3 text-sm font-bold text-white shadow-md transition hover:bg-[#5b0ed6]"
+                    >
+                      <UserPlus className="h-4 w-4" />
+                      <span>Sign Up as a Customer</span>
+                    </Link>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={item.availableQuantity <= 0}
+                    onClick={() => {
+                      if (!signedIn) {
+                        toast.error("Please sign in to book this equipment.");
+                        router.push(
+                          `/sign-in?redirect=${encodeURIComponent(
+                            `/equipment/${equipmentId}`
+                          )}`
+                        );
+                        return;
+                      }
 
-                    setIsModalOpen(true);
-                  }}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#6e13f9] py-3.5 text-sm font-bold text-white shadow-md transition hover:bg-[#5b0ed6] disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  <CreditCard className="h-4 w-4" />
-                  <span>
-                    {item.availableQuantity <= 0
-                      ? "Currently Unavailable"
-                      : "Book Now"}
-                  </span>
-                </button>
+                      if (userRole && userRole !== "customer") {
+                        toast.error(
+                          "Only customer accounts can book and pay for equipment."
+                        );
+                        return;
+                      }
+
+                      setIsModalOpen(true);
+                    }}
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#6e13f9] py-3.5 text-sm font-bold text-white shadow-md transition hover:bg-[#5b0ed6] disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    <CreditCard className="h-4 w-4" />
+                    <span>
+                      {item.availableQuantity <= 0
+                        ? "Currently Unavailable"
+                        : "Book Now"}
+                    </span>
+                  </button>
+                )}
 
                 <button
                   type="button"

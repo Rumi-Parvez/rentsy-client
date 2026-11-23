@@ -1,6 +1,5 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
 import Image from "@/components/ImageWithFallback";
 import Link from "next/link";
 
@@ -10,11 +9,7 @@ import {
   FaLinkedinIn,
   FaTwitter,
 } from "react-icons/fa";
-import {
-  HiArrowUpRight,
-  HiMoon,
-  HiSun,
-} from "react-icons/hi2";
+import { HiArrowUpRight } from "react-icons/hi2";
 
 import logoImg from "../../app/assets/rEntsy-Photoroom.png";
 
@@ -49,38 +44,6 @@ const legalLinks = [
 ];
 
 export default function Footer() {
-  const darkMode = useSyncExternalStore(
-    (onStoreChange) => {
-      window.addEventListener("storage", onStoreChange);
-      window.addEventListener("rentsy-theme-change", onStoreChange);
-
-      return () => {
-        window.removeEventListener("storage", onStoreChange);
-        window.removeEventListener("rentsy-theme-change", onStoreChange);
-      };
-    },
-
-    () => {
-      return localStorage.getItem("rentsy-theme") === "dark";
-    },
-
-    () => false,
-  );
-
-  const toggleTheme = () => {
-    const nextTheme = !darkMode;
-
-    if (nextTheme) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("rentsy-theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("rentsy-theme", "light");
-    }
-
-    window.dispatchEvent(new Event("rentsy-theme-change"));
-  };
-
   return (
     <footer className="border-t border-slate-200 bg-white text-slate-900 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950 dark:text-white">
 

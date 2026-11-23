@@ -1,44 +1,13 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
 import { HiMoon, HiSun } from "react-icons/hi2";
 
-const subscribe = (onStoreChange: () => void) => {
-  window.addEventListener("storage", onStoreChange);
-  window.addEventListener("rentsy-theme-change", onStoreChange);
-
-  return () => {
-    window.removeEventListener("storage", onStoreChange);
-    window.removeEventListener("rentsy-theme-change", onStoreChange);
-  };
-};
-
-const getSnapshot = () => {
-  return localStorage.getItem("rentsy-theme") === "dark";
-};
-
-const getServerSnapshot = () => false;
+import { useTheme } from "@/components/providers/ThemeProvider";
 
 export default function ThemeToggle() {
-  const darkMode = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot,
-  );
+  const { theme, toggleTheme } = useTheme();
 
-  const toggleTheme = () => {
-    const nextTheme = !darkMode;
-
-    if (nextTheme) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("rentsy-theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("rentsy-theme", "light");
-    }
-
-    window.dispatchEvent(new Event("rentsy-theme-change"));
-  };
+  const darkMode = theme === "dark";
 
   return (
     <button
