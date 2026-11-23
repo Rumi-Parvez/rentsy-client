@@ -18,5 +18,9 @@ export default async function DashboardLayout({
 }) {
   const user = await getDashboardUser();
 
-  return <DashboardShell user={user}>{children}</DashboardShell>;
+  return (
+    <DashboardShell user={user}>
+      {children}
+    </DashboardShell>
+  );
 }

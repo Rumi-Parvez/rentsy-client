@@ -8,7 +8,12 @@ export const metadata: Metadata = {
 };
 
 export default async function AddEquipmentPage() {
-  const user = await requireRole(["owner", "admin"]);
+  const user = await requireRole([
+    "owner",
+    "admin",
+  ]);
 
-  return <AddEquipmentClient user={user} />;
+  return (
+    <AddEquipmentClient user={user} />
+  );
 }

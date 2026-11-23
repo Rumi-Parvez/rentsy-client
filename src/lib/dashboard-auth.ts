@@ -50,20 +50,14 @@ function serializeUser(
   };
 }
 
-/**
- * Get the authenticated Dashboard user.
- *
- * If there is no valid Better Auth session,
- * redirect to the sign-in page.
- */
 export const getDashboardUser = cache(
   async (): Promise<DashboardUser> => {
-    // --------------------------------------------------
-    // 1. Get Better Auth session
-    // --------------------------------------------------
-
     let session;
 
+    /*
+     * STEP 1
+     * Real Better Auth session validation.
+     */
     try {
       session = await auth.api.getSession({
         headers: await headers(),
@@ -82,10 +76,9 @@ export const getDashboardUser = cache(
       redirect("/sign-in");
     }
 
-    // --------------------------------------------------
-    // 2. No valid session
-    // --------------------------------------------------
-
+    /*
+     * No valid authenticated session.
+     */
     if (!session?.user?.id || !session.user.email) {
       console.log(
         "[Dashboard Auth] No authenticated session"
@@ -98,19 +91,20 @@ export const getDashboardUser = cache(
       .trim()
       .toLowerCase();
 
-    // --------------------------------------------------
-    // 3. Find/create application user
-    // --------------------------------------------------
-
+    /*
+     * STEP 2
+     * Load the application user from MongoDB.
+     */
     try {
       const users = db.collection("users");
 
-      let user = await users.findOne({ email });
+      let user = await users.findOne({
+        email,
+      });
 
-      // ------------------------------------------------
-      // 4. Create application user
-      // ------------------------------------------------
-
+      /*
+       * Create application user if it does not exist.
+       */
       if (!user) {
         const now = new Date();
 
@@ -125,20 +119,21 @@ export const getDashboardUser = cache(
 
           email,
 
-          image: session.user.image || "",
+          image:
+            session.user.image || "",
 
           phone: "",
-
           address: "",
 
           role,
 
           createdAt: now,
-
           updatedAt: now,
         };
 
-        const result = await users.insertOne(newUser);
+        const result = await users.insertOne(
+          newUser
+        );
 
         user = {
           _id: result.insertedId,
@@ -150,16 +145,17 @@ export const getDashboardUser = cache(
         );
       }
 
-      // ------------------------------------------------
-      // 5. Sync admin role
-      // ------------------------------------------------
-
+      /*
+       * Keep configured admin emails as admin.
+       */
       if (
         ADMIN_EMAILS.includes(email) &&
         user.role !== "admin"
       ) {
         await users.updateOne(
-          { _id: user._id },
+          {
+            _id: user._id,
+          },
           {
             $set: {
               role: "admin",
@@ -178,10 +174,10 @@ export const getDashboardUser = cache(
         );
       }
 
-      // ------------------------------------------------
-      // 6. Return Dashboard user
-      // ------------------------------------------------
-
+      /*
+       * STEP 3
+       * Return normalized application user.
+       */
       return serializeUser(
         user as Record<string, unknown>
       );
@@ -191,13 +187,6 @@ export const getDashboardUser = cache(
         error
       );
 
-      /*
-       * Do NOT create a fake customer user when
-       * MongoDB fails.
-       *
-       * The session is valid, but the application user
-       * could not be verified safely.
-       */
       throw new Error(
         "Unable to load Dashboard user."
       );
@@ -205,24 +194,15 @@ export const getDashboardUser = cache(
   }
 );
 
-/**
- * Require an authenticated Dashboard user.
- *
- * This is kept as a separate helper for role-based
- * protected pages.
+/*
+ * Authentication helper.
  */
 export async function requireDashboardUser(): Promise<DashboardUser> {
   return getDashboardUser();
 }
 
-/**
- * Require one of the specified application roles.
- *
- * Example:
- *
- * await requireRole(["admin"]);
- *
- * await requireRole(["owner", "admin"]);
+/*
+ * Authentication + authorization helper.
  */
 export async function requireRole(
   roles: UserRole[]
